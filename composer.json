@@ -51,6 +51,7 @@
     "scripts": {
         "test": "@php tests/run.php",
         "test:http": "@php tests/http-download.php",
+        "package:release": "@php scripts/package-release.php",
         "post-autoload-dump": [
             "@php think service:discover",
             "@php think vendor:publish"

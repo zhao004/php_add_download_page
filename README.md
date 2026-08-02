@@ -251,6 +251,6 @@ NOVA_TEST_ADMIN_USERNAME='实际管理员用户名' NOVA_TEST_ADMIN_PASSWORD='�
 
 ## 安全与交付
 
-生产部署要求、已知上游公告及适用边界参见 [SECURITY.md](SECURITY.md)。制作源码售卖包前按 [PACKAGING.md](PACKAGING.md) 清除 `.env`、安装锁、测试数据、本机缓存和验收截图。
+生产部署要求、已知上游公告及适用边界参见 [SECURITY.md](SECURITY.md)。制作源码售卖包前按 [PACKAGING.md](PACKAGING.md) 清除 `.env`、安装锁、测试数据、本机缓存和验收截图；推送 `v1.2.3` 这类语义化版本标签可自动生成并发布 ZIP 源码包。
 
 项目使用 Apache-2.0 许可证，详见 [LICENSE.txt](LICENSE.txt)。随附第三方组件保留各自许可证。

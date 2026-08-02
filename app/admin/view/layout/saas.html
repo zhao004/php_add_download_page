@@ -30,14 +30,26 @@
     <aside class="admin-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel" data-admin-sidebar>
         <div class="offcanvas-header admin-sidebar-mobile-header">
             <a class="admin-brand" href="/admin" id="adminSidebarLabel" title="{$siteName}">
-                <span class="admin-brand-mark" aria-hidden="true">{$siteNameInitial}</span>
+                <span class="admin-brand-mark {if empty($appIcon)}is-fallback{/if}" aria-hidden="true">
+                    {if !empty($appIcon)}
+                    <img src="{$appIcon}" alt="">
+                    {else /}
+                    <span class="admin-brand-initial">{$siteNameInitial}</span>
+                    {/if}
+                </span>
                 <span class="admin-brand-name">{$siteName}</span>
             </a>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="关闭导航"></button>
         </div>
         <div class="offcanvas-body admin-sidebar-body">
             <a class="admin-brand admin-brand-desktop" href="/admin" title="{$siteName}">
-                <span class="admin-brand-mark" aria-hidden="true">{$siteNameInitial}</span>
+                <span class="admin-brand-mark {if empty($appIcon)}is-fallback{/if}" aria-hidden="true">
+                    {if !empty($appIcon)}
+                    <img src="{$appIcon}" alt="">
+                    {else /}
+                    <span class="admin-brand-initial">{$siteNameInitial}</span>
+                    {/if}
+                </span>
                 <span class="admin-brand-name">{$siteName}</span>
             </a>
 

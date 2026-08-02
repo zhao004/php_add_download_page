@@ -1,0 +1,113 @@
+name: 发布源码包
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 已推送的版本标签，例如 v1.2.3
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: 校验、打包并发布
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+
+    steps:
+      - name: 检出版本标签
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: 校验并锁定版本标签
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$RELEASE_TAG"
+          semver_pattern='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*)|([0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))(\.((0|[1-9][0-9]*)|([0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
+
+          if [[ ! "$tag" =~ $semver_pattern ]]; then
+            echo "版本标签不符合语义化版本规范：$tag" >&2
+            exit 1
+          fi
+
+          if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+            git ls-remote --exit-code --refs origin "refs/tags/$tag" >/dev/null
+            git fetch --force --depth=1 origin "refs/tags/$tag:refs/tags/$tag"
+            git checkout --detach "refs/tags/$tag"
+          fi
+
+          tag_commit="$(git rev-parse --verify "refs/tags/$tag^{commit}")"
+          head_commit="$(git rev-parse HEAD)"
+          if [[ "$tag_commit" != "$head_commit" ]]; then
+            echo "当前检出提交与版本标签不一致。" >&2
+            exit 1
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "archive=.release/nova-app-download-$tag.zip" >> "$GITHUB_OUTPUT"
+
+      - name: 配置 PHP 8.0
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: curl, dom, fileinfo, mbstring, pdo_mysql, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: 校验 Composer 配置
+        run: composer validate --strict
+
+      - name: 安装生产依赖
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: 执行发布门禁
+        run: |
+          composer test
+          php think route:list
+
+      - name: 生成并校验 ZIP
+        run: composer run-script package:release -- --version="$RELEASE_TAG"
+
+      - name: 保存构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: nova-app-download-${{ steps.release.outputs.tag }}
+          path: ${{ steps.release.outputs.archive }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: 创建或更新 GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE: ${{ steps.release.outputs.archive }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          asset="$ARCHIVE#NOVA 应用下载源码包"
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$asset" --clobber
+            exit 0
+          fi
+
+          arguments=(release create "$RELEASE_TAG" "$asset" --verify-tag --generate-notes)
+          release_base="${RELEASE_TAG%%+*}"
+          if [[ "$release_base" == *-* ]]; then
+            arguments+=(--prerelease)
+          fi
+          gh "${arguments[@]}"

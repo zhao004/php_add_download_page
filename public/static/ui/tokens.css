@@ -1,0 +1,79 @@
+@font-face {
+    font-family: "Anton";
+    src: url("/static/fonts/anton-400.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Geist";
+    src: url("/static/fonts/geist-variable.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "IBM Plex Mono";
+    src: url("/static/fonts/ibm-plex-mono-400.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "IBM Plex Mono";
+    src: url("/static/fonts/ibm-plex-mono-500.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+}
+
+:root {
+    color-scheme: light;
+    --nova-font-body: "Geist", "Microsoft YaHei", sans-serif;
+    --nova-font-display: "Anton", Impact, sans-serif;
+    --nova-font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+    --nova-surface-primary: #ffffff;
+    --nova-surface-secondary: #f7f8fa;
+    --nova-surface-tertiary: #eef0f2;
+    --nova-surface-inverse: #0a0a0a;
+    --nova-admin-background: #f8fafc;
+    --nova-admin-dark: #0f172a;
+    --nova-text-primary: #1a1a1a;
+    --nova-admin-text: #1e293b;
+    --nova-text-secondary: #666666;
+    --nova-text-muted: #64748b;
+    --nova-text-inverse: #ffffff;
+    --nova-accent: #4a9fd8;
+    /* 派生默认值与 ThemeColorService::palette 对齐，主题注入后会被覆盖。 */
+    --nova-accent-hover: #278bce;
+    --nova-accent-soft: #e9f3fa;
+    /* 比 soft 略深，用于按下态与较强强调底 */
+    --nova-accent-soft-strong: #d7eaf6;
+    /* 卡片/边框悬停等轻量强调描边 */
+    --nova-accent-border: #c5e0f3;
+    --nova-accent-rgb: 74, 159, 216;
+    /* 选中态文字色：在浅色强调底上保持可读，并与品牌色同源 */
+    --nova-selection-ink: #144566;
+    /* 强调色上的前景色；极浅主色时由服务端切换为深色 */
+    --nova-on-accent: #ffffff;
+    --nova-border: #e2e8f0;
+    --nova-success: #17855b;
+    --nova-success-soft: #e8f7f0;
+    --nova-warning: #a16207;
+    --nova-warning-soft: #fff7d6;
+    --nova-danger: #b42318;
+    --nova-danger-soft: #fff0ee;
+    --nova-radius-sm: 6px;
+    --nova-radius-md: 10px;
+    --nova-radius-lg: 16px;
+    --nova-radius-pill: 999px;
+    --nova-focus-ring: 0 0 0 3px rgba(var(--nova-accent-rgb), 0.22);
+    --nova-control-focus-shadow: 0 0 0 3px rgba(var(--nova-accent-rgb), 0.18);
+    --nova-accent-glow: 0 10px 28px rgba(var(--nova-accent-rgb), 0.28);
+    --nova-panel-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    font-family: var(--nova-font-body);
+    font-synthesis: none;
+}

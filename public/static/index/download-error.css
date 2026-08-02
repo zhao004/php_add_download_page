@@ -1,0 +1,486 @@
+/**
+ * 下载失败页：与落地页共用设计令牌，强调色随主题配色变化。
+ */
+:root {
+    color-scheme: light;
+    --de-card-max: 520px;
+    --de-space: 24px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body.download-error-body {
+    position: relative;
+    min-width: 320px;
+    margin: 0;
+    color: var(--nova-text-primary);
+    background: var(--nova-surface-secondary);
+    font-family: var(--nova-font-body);
+    font-synthesis: none;
+    letter-spacing: 0;
+    overflow-x: hidden;
+}
+
+/* 氛围层：主题色径向光斑 + 轻网格，不抢主内容。 */
+.download-error-atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.download-error-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.55;
+}
+
+.download-error-orb-a {
+    top: -12%;
+    right: -8%;
+    width: min(52vw, 420px);
+    height: min(52vw, 420px);
+    background: radial-gradient(
+        circle at 40% 40%,
+        rgba(var(--nova-accent-rgb), 0.42) 0%,
+        rgba(var(--nova-accent-rgb), 0.08) 55%,
+        transparent 72%
+    );
+}
+
+.download-error-orb-b {
+    bottom: -18%;
+    left: -10%;
+    width: min(60vw, 480px);
+    height: min(60vw, 480px);
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(var(--nova-accent-rgb), 0.22) 0%,
+        rgba(15, 23, 42, 0.04) 48%,
+        transparent 70%
+    );
+}
+
+.download-error-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 78%);
+}
+
+.download-error {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    min-height: 100vh;
+    padding: var(--de-space);
+    place-items: center;
+}
+
+.download-error-card {
+    display: flex;
+    width: min(100%, var(--de-card-max));
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--nova-accent-border) 70%, var(--nova-border));
+    border-radius: calc(var(--nova-radius-lg) + 4px);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, var(--nova-surface-primary) 100%);
+    box-shadow:
+        var(--nova-panel-shadow),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 24px 60px rgba(var(--nova-accent-rgb), 0.08);
+}
+
+/* 顶部品牌条 */
+.download-error-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--nova-border);
+    background: linear-gradient(
+        180deg,
+        var(--nova-accent-soft) 0%,
+        rgba(255, 255, 255, 0.4) 100%
+    );
+}
+
+.download-error-brand-link {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 12px;
+    outline: none;
+    transition: opacity 140ms ease;
+}
+
+.download-error-brand-link:hover {
+    opacity: 0.88;
+}
+
+.download-error-brand-link:focus-visible {
+    box-shadow: var(--nova-focus-ring);
+}
+
+.download-error-brand-mark {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.08),
+        0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.download-error-brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.download-error-brand-mark.is-fallback {
+    color: var(--nova-on-accent);
+    background: linear-gradient(
+        155deg,
+        var(--nova-accent) 0%,
+        var(--nova-accent-hover) 100%
+    );
+    box-shadow:
+        0 0 0 1px rgba(var(--nova-accent-rgb), 0.28),
+        var(--nova-accent-glow);
+}
+
+.download-error-brand-initial {
+    font-family: var(--nova-font-display);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.download-error-brand-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.download-error-brand-name {
+    overflow: hidden;
+    color: var(--nova-text-primary);
+    font-family: var(--nova-font-display);
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.download-error-brand-tagline {
+    overflow: hidden;
+    color: var(--nova-text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.download-error-status-pill {
+    display: inline-flex;
+    max-width: 46%;
+    min-height: 30px;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border: 1px solid var(--nova-accent-border);
+    border-radius: var(--nova-radius-pill);
+    color: var(--nova-selection-ink);
+    background: rgba(255, 255, 255, 0.78);
+    font-family: var(--nova-font-mono);
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.download-error-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: var(--nova-accent);
+    box-shadow: 0 0 0 3px rgba(var(--nova-accent-rgb), 0.18);
+}
+
+.download-error-status-code {
+    font-weight: 600;
+}
+
+.download-error-status-label {
+    overflow: hidden;
+    color: var(--nova-text-muted);
+    text-overflow: ellipsis;
+}
+
+/* 按状态微调状态点色调 */
+.download-error-card[data-status="404"] .download-error-status-dot,
+.download-error-card[data-status="502"] .download-error-status-dot {
+    background: var(--nova-warning);
+    box-shadow: 0 0 0 3px rgba(161, 98, 7, 0.16);
+}
+
+.download-error-card[data-status="500"] .download-error-status-dot,
+.download-error-card[data-status="503"] .download-error-status-dot {
+    background: var(--nova-danger);
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.14);
+}
+
+/* 视觉主区 */
+.download-error-visual {
+    display: grid;
+    padding: 28px 28px 8px;
+    place-items: center;
+}
+
+.download-error-icon-ring {
+    display: grid;
+    width: 88px;
+    height: 88px;
+    place-items: center;
+    border-radius: 28px;
+    color: var(--nova-accent);
+    background:
+        linear-gradient(160deg, var(--nova-accent-soft) 0%, #ffffff 62%),
+        var(--nova-accent-soft);
+    box-shadow:
+        0 0 0 1px var(--nova-accent-border),
+        0 12px 28px rgba(var(--nova-accent-rgb), 0.16);
+}
+
+.download-error-icon {
+    width: 44px;
+    height: 44px;
+}
+
+.download-error-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 28px 4px;
+    text-align: center;
+}
+
+.download-error-eyebrow {
+    margin: 0;
+    color: var(--nova-selection-ink);
+    font-family: var(--nova-font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+}
+
+.download-error-copy h1 {
+    margin: 0;
+    color: var(--nova-text-primary);
+    font-family: var(--nova-font-display);
+    font-size: clamp(26px, 5vw, 34px);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+}
+
+.download-error-message {
+    margin: 0;
+    color: var(--nova-text-secondary);
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.download-error-hint {
+    margin: 2px 0 0;
+    padding: 10px 12px;
+    border-left: 3px solid var(--nova-accent);
+    border-radius: 0 var(--nova-radius-sm) var(--nova-radius-sm) 0;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: left;
+}
+
+/* 操作区 */
+.download-error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 22px 28px 26px;
+}
+
+.download-error-btn {
+    display: inline-flex;
+    min-height: 44px;
+    min-width: 132px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: var(--nova-radius-pill);
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.download-error-btn svg {
+    flex: 0 0 auto;
+}
+
+.download-error-btn-primary {
+    color: var(--nova-on-accent);
+    background: var(--nova-accent);
+    box-shadow: var(--nova-accent-glow);
+}
+
+.download-error-btn-primary:hover {
+    background: var(--nova-accent-hover);
+    transform: translateY(-1px);
+}
+
+.download-error-btn-secondary {
+    color: var(--nova-selection-ink);
+    border: 1px solid var(--nova-accent-border);
+    background: var(--nova-surface-primary);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.download-error-btn-secondary:hover {
+    border-color: rgba(var(--nova-accent-rgb), 0.45);
+    background: var(--nova-accent-soft);
+    transform: translateY(-1px);
+}
+
+.download-error-btn:focus-visible {
+    outline: 3px solid rgba(var(--nova-accent-rgb), 0.32);
+    outline-offset: 3px;
+}
+
+.download-error-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--nova-border);
+    color: var(--nova-text-muted);
+    background: var(--nova-surface-secondary);
+    font-family: var(--nova-font-mono);
+    font-size: 11px;
+}
+
+.download-error-meta-label {
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.download-error-meta-value {
+    color: var(--nova-text-secondary);
+    font-weight: 500;
+}
+
+@media (max-width: 600px) {
+    .download-error {
+        padding: 16px;
+        align-items: stretch;
+        place-items: stretch;
+    }
+
+    .download-error-card {
+        margin: auto 0;
+        width: 100%;
+        border-radius: var(--nova-radius-lg);
+    }
+
+    .download-error-brand {
+        padding: 14px 16px;
+    }
+
+    .download-error-status-label {
+        display: none;
+    }
+
+    .download-error-visual {
+        padding: 22px 20px 4px;
+    }
+
+    .download-error-icon-ring {
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+    }
+
+    .download-error-copy,
+    .download-error-actions {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .download-error-actions {
+        flex-direction: column;
+        align-items: stretch;
+        padding-bottom: 20px;
+    }
+
+    .download-error-btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .download-error-btn,
+    .download-error-brand-link {
+        transition: none;
+    }
+
+    .download-error-btn:hover {
+        transform: none;
+    }
+}
+
+/* 不支持 color-mix 的环境回退边框色 */
+@supports not (border-color: color-mix(in srgb, #000 50%, #fff)) {
+    .download-error-card {
+        border-color: var(--nova-border);
+    }
+}

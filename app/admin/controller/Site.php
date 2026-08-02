@@ -44,6 +44,7 @@ class Site extends AdminController
                         'site_name_initial' => $this->resolveSiteNameInitial(
                             $siteName !== '' ? $siteName : '管理后台'
                         ),
+                        'app_icon' => trim((string) ($saved['app_icon'] ?? '')),
                         'theme_color' => $themeColor,
                         'theme_css' => $themeColorService->cssOverrides($themeColor),
                         'favicon_url' => $faviconUrl,

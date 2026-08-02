@@ -1,0 +1,394 @@
+/**
+ * 网盘下载中转页：精简卡片，适配 PC / 移动端。
+ */
+:root {
+    color-scheme: light;
+    --download-other-max: 420px;
+    --download-other-pad: 20px;
+    --download-other-radius: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body.download-other-body {
+    min-width: 320px;
+    margin: 0;
+    color: var(--nova-text-primary);
+    background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(var(--nova-accent-rgb), 0.1) 0%, transparent 55%),
+        var(--nova-surface-secondary);
+    font-family: var(--nova-font-body);
+    font-synthesis: none;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+.download-other-main {
+    display: flex;
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.download-other-panel {
+    display: flex;
+    width: min(100%, var(--download-other-max));
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--nova-accent-border) 45%, var(--nova-border));
+    border-radius: var(--download-other-radius);
+    background: var(--nova-surface-primary);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 18px 48px rgba(15, 23, 42, 0.08);
+}
+
+.download-other-brand {
+    display: flex;
+    align-items: center;
+    padding: 14px var(--download-other-pad);
+    border-bottom: 1px solid var(--nova-border);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--nova-accent-soft) 55%, #ffffff) 0%,
+        rgba(255, 255, 255, 0.4) 100%
+    );
+}
+
+.download-other-brand-link {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.download-other-brand-link:focus-visible,
+.download-other-open-link:focus-visible,
+.download-other-home-link:focus-visible,
+.download-other-copy-button:focus-visible {
+    outline: 3px solid rgba(var(--nova-accent-rgb), 0.3);
+    outline-offset: 2px;
+}
+
+.download-other-brand-mark {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.download-other-brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.download-other-brand-mark.is-fallback {
+    color: var(--nova-on-accent);
+    background: linear-gradient(155deg, var(--nova-accent) 0%, var(--nova-accent-hover) 100%);
+}
+
+.download-other-brand-mark.is-fallback span {
+    font-family: var(--nova-font-display);
+    font-size: 14px;
+    line-height: 1;
+}
+
+.download-other-brand-name {
+    overflow: hidden;
+    color: var(--nova-text-primary);
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.download-other-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px var(--download-other-pad) 8px;
+}
+
+.download-other-content h1 {
+    margin: 0;
+    color: var(--nova-text-primary);
+    font-size: clamp(22px, 5vw, 26px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.download-other-hint {
+    margin: 0;
+    color: var(--nova-text-secondary);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.download-other-password {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.download-other-password-label {
+    color: var(--nova-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.download-other-password-value {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px 6px 14px;
+    border: 1px solid color-mix(in srgb, var(--nova-accent-border) 70%, var(--nova-border));
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--nova-accent-soft) 70%, #ffffff);
+}
+
+.download-other-password-value code {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow-wrap: anywhere;
+    color: var(--nova-selection-ink);
+    font-family: var(--nova-font-mono);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    user-select: all;
+}
+
+.download-other-copy-button {
+    display: inline-flex;
+    min-height: 36px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 12px;
+    border: 1px solid var(--nova-accent-border);
+    border-radius: 9px;
+    color: var(--nova-selection-ink);
+    background: var(--nova-surface-primary);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1;
+    transition:
+        color 140ms ease,
+        border-color 140ms ease,
+        background-color 140ms ease;
+}
+
+.download-other-copy-button:hover {
+    color: var(--nova-on-accent);
+    border-color: var(--nova-accent);
+    background: var(--nova-accent);
+}
+
+.download-other-copy-button[data-copy-state="success"] {
+    color: var(--nova-success);
+    border-color: color-mix(in srgb, var(--nova-success) 35%, var(--nova-border));
+    background: var(--nova-success-soft);
+}
+
+.download-other-copy-button[data-copy-state="failure"] {
+    color: var(--nova-danger);
+    border-color: color-mix(in srgb, var(--nova-danger) 35%, var(--nova-border));
+    background: var(--nova-danger-soft);
+}
+
+.download-other-copy-button svg {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+}
+
+.download-other-copy-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.download-other-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px var(--download-other-pad) 20px;
+}
+
+.download-other-open-link,
+.download-other-home-link {
+    display: inline-flex;
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 650;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+        background-color 140ms ease,
+        border-color 140ms ease,
+        color 140ms ease,
+        transform 140ms ease;
+}
+
+.download-other-open-link {
+    color: var(--nova-on-accent);
+    background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--nova-accent) 88%, #ffffff) 0%,
+        var(--nova-accent) 48%,
+        var(--nova-accent-hover) 100%
+    );
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.2) inset,
+        0 10px 24px rgba(var(--nova-accent-rgb), 0.22);
+}
+
+.download-other-open-link:hover {
+    background: var(--nova-accent-hover);
+    transform: translateY(-1px);
+}
+
+.download-other-open-link:active {
+    transform: none;
+}
+
+.download-other-home-link {
+    min-height: 42px;
+    border: 1px solid var(--nova-border);
+    color: var(--nova-text-secondary);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 550;
+}
+
+.download-other-home-link:hover {
+    color: var(--nova-selection-ink);
+    border-color: var(--nova-accent-border);
+    background: var(--nova-accent-soft);
+}
+
+.download-other-meta {
+    padding: 10px var(--download-other-pad) 14px;
+    border-top: 1px solid var(--nova-border);
+    color: var(--nova-text-muted);
+    background: color-mix(in srgb, var(--nova-surface-secondary) 80%, #ffffff);
+    font-family: var(--nova-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+/* PC：更宽一点的阅读区，按钮横向排列 */
+@media (min-width: 720px) {
+    :root {
+        --download-other-max: 440px;
+        --download-other-pad: 24px;
+    }
+
+    .download-other-main {
+        padding: 32px;
+    }
+
+    .download-other-content {
+        padding-top: 26px;
+    }
+
+    .download-other-actions {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 24px;
+    }
+
+    .download-other-open-link {
+        flex: 1 1 auto;
+        width: auto;
+        min-height: 46px;
+    }
+
+    .download-other-home-link {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 108px;
+        min-height: 46px;
+        padding: 0 16px;
+    }
+}
+
+/* 窄屏：卡片贴底更易单手操作 */
+@media (max-width: 480px) {
+    .download-other-main {
+        align-items: stretch;
+        padding: 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .download-other-panel {
+        width: 100%;
+        margin: auto 0;
+        border-radius: 14px;
+    }
+
+    .download-other-password-value {
+        min-height: 52px;
+    }
+
+    .download-other-copy-button {
+        min-height: 40px;
+        padding: 0 14px;
+    }
+
+    .download-other-open-link {
+        min-height: 50px;
+        font-size: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .download-other-copy-button,
+    .download-other-open-link,
+    .download-other-home-link {
+        transition: none;
+    }
+
+    .download-other-open-link:hover {
+        transform: none;
+    }
+}

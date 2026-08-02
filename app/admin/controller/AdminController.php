@@ -51,7 +51,7 @@ abstract class AdminController extends BaseController
 
         $flashes = $this->flashService()->pull();
         $uploadLimits = UploadLimitService::fromApplication($this->app);
-        $siteName = $this->resolveSiteName();
+        $brand = $this->resolveBrandContext();
         $themeStyle = $this->resolveThemeStyleTag();
         $faviconUrl = $this->resolveFaviconUrl();
 
@@ -65,8 +65,9 @@ abstract class AdminController extends BaseController
             'flashes' => $flashes,
             'flash' => $flashes === [] ? null : $flashes[count($flashes) - 1],
             'uploadLimits' => $uploadLimits->viewData(),
-            'siteName' => $siteName,
-            'siteNameInitial' => $this->resolveSiteNameInitial($siteName),
+            'siteName' => $brand['siteName'],
+            'siteNameInitial' => $brand['siteNameInitial'],
+            'appIcon' => $brand['appIcon'],
             'themeStyle' => $themeStyle,
             'faviconUrl' => $faviconUrl,
             // 错误已转为 Toast，模板侧不再依赖内联提示。
@@ -110,28 +111,37 @@ abstract class AdminController extends BaseController
     }
 
     /**
-     * 读取站点配置中的软件名称，供侧栏品牌区展示。
+     * 读取侧栏品牌上下文：软件名称、首字与应用图标。
      *
-     * @return string 非空软件名称
+     * @return array{siteName: string, siteNameInitial: string, appIcon: string}
      */
-    private function resolveSiteName(): string
+    private function resolveBrandContext(): array
     {
+        $siteName = '管理后台';
+        $appIcon = '';
+
         try {
             /** @var SiteConfigService $configService */
             $configService = $this->app->make(SiteConfigService::class);
-            $name = trim((string) ($configService->get()['site_name'] ?? ''));
+            $config = $configService->get();
+            $name = trim((string) ($config['site_name'] ?? ''));
             if ($name !== '') {
-                return $name;
+                $siteName = $name;
             }
+            $appIcon = trim((string) ($config['app_icon'] ?? ''));
         } catch (Throwable $exception) {
             // 配置暂不可用时回退默认文案，避免后台布局整体失败。
         }
 
-        return '管理后台';
+        return [
+            'siteName' => $siteName,
+            'siteNameInitial' => $this->resolveSiteNameInitial($siteName),
+            'appIcon' => $appIcon,
+        ];
     }
 
     /**
-     * 取软件名称首字，用于侧栏收起态与异步保存后的品牌同步。
+     * 取软件名称首字，用于无图标时的侧栏回退展示与异步保存后的品牌同步。
      *
      * @param string $siteName 软件名称
      * @return string 单个展示字符

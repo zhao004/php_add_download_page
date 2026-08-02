@@ -1,0 +1,3547 @@
+:root {
+    --nova-bg: var(--nova-admin-background);
+    --nova-surface: var(--nova-surface-primary);
+    --nova-text: var(--nova-admin-text);
+    --nova-muted: var(--nova-text-muted);
+    --nova-dark: var(--nova-admin-dark);
+    --nova-sidebar-width: 248px;
+    --bs-primary: var(--nova-accent);
+    --bs-primary-rgb: var(--nova-accent-rgb);
+    --bs-focus-ring-color: rgba(var(--nova-accent-rgb), 0.25);
+    --bs-body-color: var(--nova-admin-text);
+    --bs-body-bg: var(--nova-admin-background);
+    --bs-border-color: var(--nova-border);
+    --bs-body-font-family: var(--nova-font-body);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    letter-spacing: 0;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * 桌面后台采用“壳层锁视口 + 主区内部滚动”：
+ * 不再用 position:fixed 侧栏配合整页滚动条，避免切页时滚动条显隐造成整栏横向抖动。
+ */
+html.admin-layout,
+html.admin-layout body.admin-body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.admin-body {
+    margin: 0;
+    color: var(--nova-text);
+    background: var(--nova-bg);
+}
+
+.admin-shell {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.admin-sidebar {
+    flex: 0 0 var(--nova-sidebar-width);
+    width: var(--nova-sidebar-width) !important;
+    max-width: var(--nova-sidebar-width);
+    border-right: 1px solid var(--nova-border);
+    background: var(--nova-surface);
+}
+
+.admin-sidebar .admin-sidebar-body {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 24px 16px 18px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.admin-sidebar-mobile-header {
+    border-bottom: 1px solid var(--nova-border);
+}
+
+.admin-brand {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    gap: 10px;
+    color: var(--nova-dark);
+    text-decoration: none;
+}
+
+.admin-brand:hover {
+    color: var(--nova-dark);
+}
+
+.admin-brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.08),
+        0 2px 8px rgba(15, 23, 42, 0.06);
+    font-family: var(--nova-font-body);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.admin-brand-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 无应用图标时回退为首字徽标。 */
+.admin-brand-mark.is-fallback {
+    color: #ffffff;
+    background: var(--nova-dark);
+    box-shadow: none;
+}
+
+.admin-brand-initial {
+    display: block;
+    line-height: 1;
+}
+
+.admin-brand-name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--nova-dark);
+    font-family: var(--nova-font-body);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-brand-desktop {
+    margin: 0 10px 32px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    /* 隔离导航区重绘，降低切页时整栏连锁抖动 */
+    contain: layout paint;
+}
+
+.sidebar-section-label {
+    margin: 20px 12px 6px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.sidebar-section-label:first-child {
+    margin-top: 0;
+}
+
+.sidebar-link {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 7px;
+    color: #475569;
+    background: transparent;
+    /* 字重保持恒定：active 加粗会导致文字变宽，切页时导航按钮明显跳动 */
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: left;
+    text-decoration: none;
+}
+
+.sidebar-link i {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1;
+    text-align: center;
+}
+
+.sidebar-link span {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .sidebar-link {
+        transition: color 120ms ease, background-color 120ms ease;
+    }
+}
+
+.sidebar-link:hover {
+    color: var(--nova-dark);
+    background: #f1f5f9;
+}
+
+.sidebar-link.active {
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+}
+
+.sidebar-link.active i {
+    color: var(--nova-accent);
+}
+
+/* 切页瞬间禁用导航过渡，避免“旧悬停态 → 新选中态”动画造成按钮闪动 */
+html:not(.sidebar-nav-interactive) .sidebar-link {
+    transition: none !important;
+}
+
+.admin-main {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--nova-bg);
+}
+
+.admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    min-height: 64px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+    /* 左侧收紧，让侧栏切换按钮更贴近主内容起点 */
+    padding: 0 28px 0 12px;
+    border-bottom: 1px solid var(--nova-border);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+}
+
+/*
+ * 侧栏展开/收起与移动端菜单按钮：
+ * 无边框幽灵按钮 + 品牌色悬停，比通用 btn-icon 更轻、更贴近顶栏。
+ */
+.topbar-nav-btn {
+    display: inline-grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    color: #64748b;
+    background: transparent;
+    box-shadow: none;
+    transition: color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.topbar-nav-btn i {
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: transform 180ms ease;
+}
+
+.topbar-nav-btn:hover {
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+}
+
+.topbar-nav-btn:focus-visible {
+    outline: 0;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+    box-shadow: var(--nova-control-focus-shadow);
+}
+
+.topbar-nav-btn:active {
+    transform: scale(0.96);
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft-strong);
+}
+
+/* 侧栏收起时保持切换按钮为“已激活”视觉反馈 */
+html.sidebar-collapsed .topbar-nav-btn[data-sidebar-toggle] {
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+}
+
+html.sidebar-collapsed .topbar-nav-btn[data-sidebar-toggle] i {
+    transform: scaleX(-1);
+}
+
+/* 异步侧栏切换使用顶栏内的细进度条，不改变现有布局尺寸。 */
+.admin-navigation-progress {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    opacity: 0;
+    background: var(--nova-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: opacity 120ms ease;
+    pointer-events: none;
+}
+
+.admin-navigation-progress.is-loading {
+    opacity: 1;
+    animation: admin-navigation-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes admin-navigation-progress {
+    0% {
+        transform: scaleX(0.08);
+    }
+
+    55% {
+        transform: scaleX(0.72);
+    }
+
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+.topbar-title {
+    flex: 1 1 auto;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--nova-dark);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.topbar-end {
+    display: flex;
+    min-width: 0;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-actions {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.topbar-actions:empty {
+    display: none;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.topbar-user-button {
+    min-height: 40px;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 7px;
+    color: var(--nova-text);
+    background: transparent;
+}
+
+.topbar-user-button:hover,
+.topbar-user-button:focus-visible,
+.topbar-user-button[aria-expanded="true"] {
+    background: #f1f5f9;
+}
+
+.topbar-user-menu {
+    min-width: 180px;
+    padding: 6px;
+    border-color: var(--nova-border);
+    border-radius: 8px;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+}
+
+.topbar-user-menu .dropdown-item {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 9px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.topbar-user-menu .dropdown-item i {
+    width: 18px;
+    text-align: center;
+}
+
+.user-avatar {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--nova-dark);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.user-name {
+    max-width: 160px;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-icon {
+    display: inline-grid;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid var(--nova-border);
+    border-radius: 7px;
+    color: #475569;
+    background: #ffffff;
+}
+
+.btn-icon:hover {
+    border-color: #b8c2cf;
+    color: var(--nova-dark);
+    background: #f8fafc;
+}
+
+.admin-content {
+    flex: 1 0 auto;
+    width: min(1460px, 100%);
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.metric-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    background: var(--nova-surface);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.metric-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border-radius: 9px;
+    font-size: 18px;
+}
+
+.metric-icon-blue {
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+}
+
+.metric-icon-green {
+    color: var(--nova-success);
+    background: var(--nova-success-soft);
+}
+
+.metric-icon-amber {
+    color: var(--nova-warning);
+    background: var(--nova-warning-soft);
+}
+
+.metric-icon-dark {
+    color: #ffffff;
+    background: var(--nova-dark);
+}
+
+.metric-card p,
+.metric-card small {
+    margin: 0;
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.metric-card strong {
+    display: block;
+    margin: 1px 0;
+    color: var(--nova-dark);
+    font-family: var(--nova-font-mono);
+    font-size: 25px;
+    line-height: 1.25;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 0.75fr);
+    gap: 18px;
+}
+
+.surface-panel {
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    background: var(--nova-surface);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.trend-panel,
+.health-panel {
+    padding: 24px;
+}
+
+.panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.trend-panel-heading {
+    margin-bottom: 18px;
+    align-items: center;
+}
+
+.panel-heading h2,
+.form-section-heading h2 {
+    margin: 0;
+    color: var(--nova-dark);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.panel-heading p,
+.form-section-heading p {
+    margin: 4px 0 0;
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.trend-heading-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.trend-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 5px 10px;
+    border: 1px solid var(--nova-border);
+    border-radius: 999px;
+    background: #f8fafc;
+}
+
+.trend-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.trend-swatch {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94a3b8;
+}
+
+.data-badge {
+    padding: 5px 8px;
+    border: 1px solid var(--nova-border);
+    border-radius: 6px;
+    color: var(--nova-muted);
+    background: #ffffff;
+    font-family: var(--nova-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+}
+
+.chart-shell {
+    position: relative;
+    padding: 8px 4px 2px;
+    border: 1px solid color-mix(in srgb, var(--nova-border) 88%, #ffffff);
+    border-radius: 12px;
+    background:
+        linear-gradient(180deg, #fbfcfd 0%, #ffffff 42%);
+}
+
+.chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 320px;
+}
+
+.chart-empty {
+    display: flex;
+    min-height: 320px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 28px 20px;
+    border: 1px dashed color-mix(in srgb, var(--nova-border) 80%, #cbd5e1);
+    border-radius: 12px;
+    color: var(--nova-muted);
+    background:
+        radial-gradient(ellipse 60% 50% at 50% 40%, rgba(var(--nova-accent-rgb), 0.05) 0%, transparent 70%),
+        #f8fafc;
+    text-align: center;
+}
+
+.chart-empty-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-accent-border) 70%, transparent);
+    font-size: 20px;
+}
+
+.chart-empty strong {
+    color: #334155;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.chart-empty > span:last-child {
+    max-width: 280px;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.health-status {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 8px 0 24px;
+    padding: 16px;
+    border: 1px solid var(--nova-border);
+    border-radius: 8px;
+    background: var(--nova-bg);
+}
+
+.health-status i {
+    font-size: 20px;
+}
+
+.health-status div {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-status strong {
+    font-size: 14px;
+}
+
+.health-status span {
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.health-status.is-ready i {
+    color: var(--nova-success);
+}
+
+.health-status.is-warning i {
+    color: var(--nova-warning);
+}
+
+.form-panel,
+.compact-form-panel {
+    padding: 28px;
+}
+
+.compact-form-panel {
+    width: min(680px, 100%);
+}
+
+/* 修改密码：卡片在内容区水平居中。 */
+.password-workspace {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    min-height: min(560px, calc(100% - 8px));
+    padding: 12px 0 28px;
+}
+
+.password-panel.compact-form-panel {
+    width: min(460px, 100%);
+    margin: 0 auto;
+    padding: 28px 28px 26px;
+    border-radius: 16px;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 12px 32px rgba(15, 23, 42, 0.05);
+}
+
+.password-panel-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--nova-border) 88%, transparent);
+}
+
+.password-panel-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--nova-selection-ink);
+    background:
+        linear-gradient(160deg, var(--nova-accent-soft) 0%, color-mix(in srgb, var(--nova-accent-soft-strong) 70%, #ffffff) 100%);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-accent-border) 55%, transparent);
+    font-size: 17px;
+}
+
+.password-panel-title {
+    margin: 0;
+    color: var(--nova-dark);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.password-panel-desc {
+    margin: 4px 0 0;
+    color: var(--nova-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.password-panel .form-label {
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.password-submit {
+    min-height: 44px;
+    font-weight: 600;
+}
+
+/*
+ * 配置页工作区：选项卡长表单 + 吸底保存区。
+ * 页头由顶栏 pageTitle 承担，不再单独放说明卡片。
+ */
+.config-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* 保留选择器供测试与兼容引用；页内已不再输出该结构。 */
+.config-page-header {
+    display: none;
+}
+
+.config-status-chip {
+    display: none;
+}
+
+.config-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    /* 不用 overflow:hidden，避免吸底保存条被裁剪 */
+    overflow: visible;
+}
+
+/* 站点配置：外层面板更轻，把视觉重心放到分组卡片。 */
+.site-config-panel {
+    padding: 22px 22px 0;
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+}
+
+.site-config-panel.form-panel {
+    padding-bottom: 0;
+}
+
+.config-panel > .alert {
+    margin: 0 0 18px;
+}
+
+/* 选项卡外壳：桌面固定，移动端横向滚动并带边缘渐隐。 */
+.config-tabs-shell {
+    position: relative;
+    margin: 0 0 22px;
+}
+
+.config-tabs-shell::before,
+.config-tabs-shell::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 1px;
+    z-index: 2;
+    width: 28px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.config-tabs-shell::before {
+    left: 0;
+    background: linear-gradient(90deg, #ffffff 18%, transparent 100%);
+}
+
+.config-tabs-shell::after {
+    right: 0;
+    background: linear-gradient(270deg, #ffffff 18%, transparent 100%);
+}
+
+.config-tabs-shell.is-scrollable-start::before,
+.config-tabs-shell.is-scrollable-end::after {
+    opacity: 1;
+}
+
+/* 配置页选项卡：图标 + 文字，选中态强调色下划线。 */
+.config-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--nova-border);
+    border-radius: 0;
+    background: transparent;
+    scrollbar-width: none;
+}
+
+.config-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.config-tabs .nav-item {
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.config-tabs .nav-link {
+    display: inline-flex;
+    width: auto;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: -1px;
+    padding: 10px 16px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: #64748b;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+
+.config-tabs .nav-link i {
+    font-size: 15px;
+    line-height: 1;
+    opacity: 0.88;
+}
+
+.config-tabs .nav-link:hover {
+    color: var(--nova-dark);
+    background: color-mix(in srgb, var(--nova-accent-soft) 35%, transparent);
+}
+
+.config-tabs .nav-link:focus-visible {
+    outline: 0;
+    color: var(--nova-selection-ink);
+    box-shadow: var(--nova-control-focus-shadow);
+    border-radius: 8px 8px 0 0;
+}
+
+.config-tabs .nav-link.active {
+    color: var(--nova-selection-ink);
+    background: transparent;
+    border-bottom-color: var(--nova-accent);
+    box-shadow: none;
+}
+
+.config-tabs .nav-link.active i {
+    color: var(--nova-accent);
+    opacity: 1;
+}
+
+.config-tab-content {
+    min-width: 0;
+    padding-bottom: 8px;
+}
+
+.config-card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.config-card {
+    padding: 20px 20px 20px 22px;
+    border: 1px solid var(--nova-border);
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 1px 2px rgba(15, 23, 42, 0.03);
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.config-card:hover {
+    border-color: color-mix(in srgb, var(--nova-border) 65%, var(--nova-accent-border));
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 10px 24px rgba(15, 23, 42, 0.045);
+}
+
+.config-card-compact {
+    max-width: 560px;
+}
+
+.config-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid color-mix(in srgb, var(--nova-border) 88%, transparent);
+}
+
+.config-card-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    border-radius: 11px;
+    color: var(--nova-selection-ink);
+    background:
+        linear-gradient(160deg, var(--nova-accent-soft) 0%, color-mix(in srgb, var(--nova-accent-soft-strong) 70%, #ffffff) 100%);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-accent-border) 55%, transparent);
+    font-size: 15px;
+    line-height: 1;
+}
+
+.config-card-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding-top: 1px;
+}
+
+.config-card-head h3 {
+    margin: 0;
+    color: var(--nova-dark);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.config-card-head p {
+    margin: 4px 0 0;
+    color: var(--nova-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.config-card-head.mb-0 {
+    margin-bottom: 12px;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.config-field-grid .form-label {
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.config-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.55;
+}
+
+.config-asset-grid {
+    --bs-gutter-y: 1rem;
+}
+
+.config-asset-tile {
+    height: 100%;
+    padding: 14px;
+    border: 1px solid color-mix(in srgb, var(--nova-border) 90%, var(--nova-accent-border));
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, #f8fafc 0%, #ffffff 58%);
+}
+
+.config-asset-tile .form-label {
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.config-rule-grid .config-switch-card {
+    min-height: 100%;
+}
+
+.config-switch-card {
+    display: flex;
+    width: 100%;
+    min-height: 96px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 14px 16px;
+    border: 1px solid var(--nova-border);
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.config-switch-card .form-check-label {
+    color: var(--nova-dark);
+    font-size: 13.5px;
+    font-weight: 650;
+}
+
+.config-switch-card p {
+    margin: 8px 0 0;
+    color: var(--nova-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.config-inline-tips {
+    margin-top: 16px;
+}
+
+.config-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px dashed color-mix(in srgb, var(--nova-accent-border) 70%, var(--nova-border));
+    border-radius: 12px;
+    color: #475569;
+    background: color-mix(in srgb, var(--nova-accent-soft) 55%, #ffffff);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.config-tip-item i {
+    margin-top: 1px;
+    color: var(--nova-accent);
+    font-size: 15px;
+}
+
+/*
+ * 吸底保存条：相对主内容滚动区域贴底。
+ * 祖先 overflow 保持 visible，避免 sticky 失效。
+ */
+.config-form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    margin-top: 24px;
+    margin-left: -22px;
+    margin-right: -22px;
+    margin-bottom: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 22px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--nova-border);
+    border-radius: 0 0 16px 16px;
+    background: color-mix(in srgb, #ffffff 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -10px 28px rgba(15, 23, 42, 0.045);
+    transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+/* 下载配置等仍使用较大 form-panel 内边距时，保持保存条贴齐面板边缘。 */
+.form-panel:not(.site-config-panel) .config-form-actions {
+    margin-left: -28px;
+    margin-right: -28px;
+    margin-bottom: -28px;
+    padding: 16px 28px calc(16px + env(safe-area-inset-bottom, 0px));
+    border-radius: 0 0 12px 12px;
+}
+
+.config-form-actions.is-dirty {
+    border-top-color: color-mix(in srgb, var(--nova-accent-border) 70%, var(--nova-border));
+    background: color-mix(in srgb, var(--nova-accent-soft) 42%, rgba(255, 255, 255, 0.9));
+    box-shadow:
+        0 -12px 30px rgba(var(--nova-accent-rgb), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.config-form-actions-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.config-form-actions-copy strong {
+    display: block;
+    color: var(--nova-dark);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.config-form-actions-copy > span[data-config-save-hint] {
+    display: block;
+    margin-top: 3px;
+    color: var(--nova-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.config-dirty-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--nova-selection-ink);
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(var(--nova-accent-rgb), 0.22);
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.2;
+}
+
+.config-dirty-badge[hidden] {
+    display: none !important;
+}
+
+.config-dirty-badge i {
+    font-size: 7px;
+    color: var(--nova-accent);
+}
+
+.config-form-actions-btns {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.config-form-actions .btn,
+.config-save-btn {
+    flex: 0 0 auto;
+    min-height: 42px;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.config-form-actions.is-dirty .config-save-btn {
+    color: var(--nova-on-accent, #ffffff);
+    border-color: var(--nova-accent);
+    background: var(--nova-accent);
+    box-shadow: var(--nova-accent-glow);
+}
+
+.config-form-actions.is-dirty .config-save-btn:hover {
+    color: var(--nova-on-accent, #ffffff);
+    border-color: var(--nova-accent-hover);
+    background: var(--nova-accent-hover);
+}
+
+/* 清除密码：行内复选，替代原先厚重的开关卡片。 */
+.config-inline-check {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--nova-border);
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.config-inline-check .form-check-input {
+    margin-top: 0;
+}
+
+.config-inline-check .form-check-label {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.download-mode-hint {
+    margin-top: 8px;
+    color: var(--nova-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.download-source-card .form-select {
+    max-width: 420px;
+}
+
+/* 本地安装包：状态 + 上传合并为单卡。 */
+.apk-package-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.apk-package-card.is-ready {
+    border-color: color-mix(in srgb, var(--nova-success) 22%, var(--nova-border));
+}
+
+.apk-package-card.is-empty {
+    border-style: dashed;
+}
+
+.apk-package-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.apk-package-head .apk-status-meta {
+    margin-top: 0;
+    flex: 0 0 auto;
+}
+
+.apk-package-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 16px;
+    padding-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--nova-border) 88%, transparent);
+}
+
+.apk-package-body .apk-status-card {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.apk-package-body .apk-status-card:hover {
+    border: 0;
+    box-shadow: none;
+}
+
+.apk-upload-form {
+    min-width: 0;
+}
+
+/* 仅承载 CSRF 的主表单由 form 属性关联外部字段，本身不占布局 */
+.config-primary-form {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.form-section {
+    padding: 0 0 28px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--nova-border);
+}
+
+.form-section-heading {
+    margin-bottom: 16px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.upload-divider {
+    height: 1px;
+    margin: 30px 0;
+    background: var(--nova-border);
+}
+
+.upload-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+}
+
+.apk-status-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-accent-border) 65%, transparent);
+    font-size: 18px;
+}
+
+.apk-package-card.is-ready .apk-status-icon {
+    color: var(--nova-success);
+    background: var(--nova-success-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-success) 22%, transparent);
+}
+
+.apk-status-body {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.apk-status-meta {
+    margin-top: 0;
+}
+
+.apk-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.apk-status-pill.is-ready {
+    color: var(--nova-success);
+    background: var(--nova-success-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-success) 18%, transparent);
+}
+
+.apk-status-pill.is-empty {
+    color: var(--nova-warning);
+    background: var(--nova-warning-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-warning) 18%, transparent);
+}
+
+.asset-field .input-group {
+    flex-wrap: nowrap;
+}
+
+.asset-field .form-control {
+    min-width: 0;
+}
+
+.config-asset-tile .asset-preview-row {
+    min-height: 64px;
+    padding-top: 12px;
+}
+
+.config-asset-tile .asset-preview {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+    border-radius: 14px;
+}
+
+/* 隐藏原生文件框，由“上传”文字按钮触发选择。 */
+.asset-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.asset-field [data-image-submit] {
+    flex: 0 0 auto;
+    min-width: 4.5rem;
+}
+
+.asset-preview-row {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    gap: 10px;
+    padding-top: 8px;
+}
+
+.asset-preview {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    object-fit: contain;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.asset-feedback {
+    min-width: 0;
+    color: var(--nova-muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.asset-feedback.is-success {
+    color: var(--nova-success);
+}
+
+.asset-feedback.is-error {
+    color: var(--nova-danger);
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+    min-height: 42px;
+    border-color: #cbd5e1;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: #94a3b8;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--nova-accent);
+    box-shadow: var(--nova-control-focus-shadow);
+}
+
+/*
+ * 覆盖 Bootstrap 硬编码的 #0d6efd 选中色，
+ * 使下拉、勾选、开关、分段单选统一使用品牌强调色。
+ */
+.form-select option:checked,
+.form-select option:focus {
+    color: var(--nova-selection-ink);
+    background-color: var(--nova-accent-soft);
+}
+
+.form-check-input {
+    border-color: #94a3b8;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.form-check-input:hover {
+    border-color: var(--nova-accent);
+}
+
+.form-check-input:focus {
+    border-color: var(--nova-accent);
+    box-shadow: var(--nova-control-focus-shadow);
+}
+
+.form-check-input:checked {
+    background-color: var(--nova-accent);
+    border-color: var(--nova-accent);
+}
+
+.form-check-input[type="checkbox"]:indeterminate {
+    background-color: var(--nova-accent);
+    border-color: var(--nova-accent);
+}
+
+.form-switch .form-check-input {
+    width: 2.4em;
+    height: 1.25em;
+    margin-top: 0.15em;
+}
+
+.form-switch .form-check-input:focus {
+    /* 开关焦点态圆点默认使用品牌色；可配置主题会通过 nova-theme-vars 覆盖 fill */
+    --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%234a9fd8'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--nova-accent);
+    border-color: var(--nova-accent);
+}
+
+.form-check-label {
+    color: var(--nova-text);
+    cursor: pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--nova-accent);
+}
+
+.form-label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-text {
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.mode-segment {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mode-segment .btn {
+    position: relative;
+    display: flex;
+    min-height: 108px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 18px 16px;
+    border: 1px solid var(--nova-border);
+    border-radius: 14px;
+    color: var(--nova-text);
+    background: #ffffff;
+    text-align: left;
+    transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.mode-segment .btn:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    transform: translateY(-1px);
+}
+
+.mode-segment-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border-radius: 12px;
+    color: #64748b;
+    background: #f1f5f9;
+    font-size: 20px;
+    transition: color 140ms ease, background-color 140ms ease;
+}
+
+.mode-segment-copy {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 48px;
+}
+
+.mode-segment .btn strong {
+    color: var(--nova-dark);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.mode-segment .btn small {
+    color: var(--nova-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.mode-segment-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #64748b;
+    background: #f1f5f9;
+    font-family: var(--nova-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.mode-segment-check {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 999px;
+    color: #ffffff;
+    background: var(--nova-accent);
+    font-size: 12px;
+    opacity: 0;
+    transform: scale(0.84);
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.mode-segment .btn-check:checked + .btn {
+    border-color: var(--nova-accent);
+    color: var(--nova-selection-ink);
+    background: color-mix(in srgb, var(--nova-accent-soft) 70%, #ffffff);
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--nova-accent-rgb), 0.22),
+        0 10px 24px rgba(var(--nova-accent-rgb), 0.10);
+}
+
+.mode-segment .btn-check:checked + .btn .mode-segment-icon {
+    color: var(--nova-selection-ink);
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(var(--nova-accent-rgb), 0.18);
+}
+
+.mode-segment .btn-check:checked + .btn .mode-segment-tag {
+    color: var(--nova-selection-ink);
+    background: #ffffff;
+}
+
+.mode-segment .btn-check:checked + .btn .mode-segment-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mode-segment .btn-check:focus-visible + .btn {
+    border-color: var(--nova-accent);
+    box-shadow: var(--nova-control-focus-shadow);
+}
+
+.table-panel {
+    overflow: hidden;
+}
+
+/* 表格始终保留列结构；窄屏时仅在自身区域横向滚动。 */
+.admin-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table-scroll:focus-visible {
+    outline: 2px solid var(--nova-accent);
+    outline-offset: -2px;
+}
+
+.table-toolbar {
+    display: flex;
+    min-height: 66px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--nova-border);
+}
+
+.table-toolbar > div {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
+}
+
+.table-toolbar strong {
+    font-size: 13px;
+}
+
+.table-toolbar span {
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.table-toolbar-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.table-batch-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.table-batch-count {
+    color: var(--nova-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.admin-table {
+    min-width: 900px;
+    table-layout: fixed;
+}
+
+.admin-table th,
+.admin-table td {
+    white-space: nowrap;
+}
+
+.select-column {
+    width: 44px;
+}
+
+.select-cell,
+.select-column {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr.is-selected td {
+    background: rgba(var(--nova-accent-rgb), 0.06);
+}
+
+.admin-table th {
+    padding: 11px 16px;
+    border-bottom-color: var(--nova-border);
+    color: var(--nova-muted);
+    background: #f8fafc;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-table td {
+    padding: 13px 16px;
+    border-bottom-color: #edf1f5;
+    font-size: 13px;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-table tbody tr:hover td {
+    background: #fbfdff;
+}
+
+.id-column {
+    width: 64px;
+}
+
+.action-column {
+    width: 104px;
+}
+
+.table-value {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status-pill {
+    display: inline-flex;
+    min-width: 54px;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-enabled {
+    color: var(--nova-success);
+    background: #e8f7f0;
+}
+
+.status-disabled {
+    color: var(--nova-muted);
+    background: #eef2f6;
+}
+
+.content-status-column {
+    width: 88px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.content-status-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.content-status-switch {
+    display: inline-flex;
+    min-height: 1.25em;
+    align-items: center;
+    margin: 0;
+    padding-left: 0;
+}
+
+.content-status-switch .form-check-input {
+    float: none;
+    margin: 0;
+}
+
+.content-status-switch .form-check-input:disabled {
+    cursor: progress;
+}
+
+.table-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.table-actions form {
+    margin: 0;
+}
+
+.table-actions .btn-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.pagination-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--nova-border);
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.empty-state {
+    display: flex;
+    min-height: 360px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.empty-state > i {
+    margin-bottom: 14px;
+    color: #94a3b8;
+    font-size: 34px;
+}
+
+.empty-state h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.empty-state p {
+    margin: 7px 0 20px;
+    color: var(--nova-muted);
+    font-size: 13px;
+}
+
+.filter-panel {
+    padding: 18px 20px;
+    margin-bottom: 16px;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.filter-grid-download {
+    grid-template-columns: repeat(5, minmax(140px, 1fr));
+}
+
+.filter-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-grid label > span {
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.log-table {
+    min-width: 1424px;
+}
+
+.download-log-table {
+    min-width: 1224px;
+}
+
+.log-time {
+    width: 154px;
+    color: var(--nova-muted);
+    font-size: 11px !important;
+}
+
+.ip-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ip-cell code {
+    color: #334155;
+    font-size: 12px;
+}
+
+.ip-cell .btn-icon {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+}
+
+.location-text,
+.mode-pill,
+.device-pill {
+    font-size: 12px;
+}
+
+.location-text {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.device-pill,
+.mode-pill {
+    display: inline-flex;
+    padding: 4px 7px;
+    border-radius: 5px;
+    color: #475569;
+    background: #eef2f6;
+    font-family: var(--nova-font-mono);
+}
+
+.device-bot {
+    color: var(--nova-warning);
+    background: #fff7d6;
+}
+
+.user-agent {
+    color: var(--nova-muted);
+    font-size: 11px;
+}
+
+.status-pending {
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+}
+
+.status-failed {
+    color: var(--nova-danger);
+    background: var(--nova-danger-soft);
+}
+
+.modal-content {
+    border: 1px solid var(--nova-border);
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+}
+
+.content-form-modal-content .modal-body {
+    padding: 24px;
+}
+
+.log-detail-modal-content .modal-body {
+    padding: 24px;
+}
+
+.log-detail-loading {
+    display: grid;
+    min-height: 180px;
+    place-items: center;
+    color: var(--nova-muted);
+    font-size: 14px;
+}
+
+.log-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 24px;
+    margin: 0;
+    border-top: 1px solid var(--nova-border);
+}
+
+.log-detail-field {
+    min-width: 0;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--nova-border);
+}
+
+.log-detail-field--wide {
+    grid-column: 1 / -1;
+}
+
+.log-detail-field dt {
+    color: var(--nova-muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.log-detail-field dd {
+    margin: 5px 0 0;
+    overflow-wrap: anywhere;
+    color: var(--nova-admin-text);
+    font-size: 13px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+.log-detail-field--mono dd {
+    font-family: var(--nova-font-mono);
+    font-size: 12px;
+}
+
+.content-modal-loading {
+    display: grid;
+    min-height: 180px;
+    place-items: center;
+    color: var(--nova-muted);
+    font-size: 14px;
+}
+
+.content-form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ---------- Toast：白底极简提示，类型色仅用于图标 ---------- */
+.toast-container {
+    z-index: 1090;
+    display: flex;
+    max-width: min(100vw - 24px, 380px);
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast-container .admin-toast {
+    --admin-toast-duration: 4200ms;
+    /* 默认中性色；各 type 仅覆盖图标色 */
+    --admin-toast-accent: #64748b;
+    pointer-events: auto;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--nova-border);
+    border-radius: 12px;
+    color: var(--nova-admin-text);
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    /* 覆盖 Bootstrap 默认 text-bg 表现 */
+    --bs-toast-bg: #ffffff;
+    --bs-toast-color: var(--nova-admin-text);
+    --bs-toast-border-width: 0;
+    --bs-toast-border-color: transparent;
+    --bs-toast-border-radius: 12px;
+    --bs-toast-box-shadow: none;
+}
+
+.admin-toast.showing,
+.admin-toast.show {
+    animation: admin-toast-enter 240ms ease-out both;
+}
+
+.admin-toast-inner {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    /* 右侧预留关闭按钮占位，避免 hover 出现时正文抖动 */
+    padding: 12px 12px 12px 14px;
+}
+
+.admin-toast-icon {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    margin-top: 1px;
+    place-items: center;
+    color: var(--admin-toast-accent);
+    background: transparent;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.admin-toast .toast-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 1px 28px 1px 0;
+    color: var(--nova-admin-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.admin-toast-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 6px;
+    color: #94a3b8;
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    line-height: 1;
+    transition: opacity 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+
+.admin-toast-close i {
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* 仅悬停 / 键盘聚焦时显示关闭按钮 */
+.admin-toast:hover .admin-toast-close,
+.admin-toast:focus-within .admin-toast-close {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.admin-toast-close:hover {
+    color: #334155;
+    background: #f1f5f9;
+}
+
+.admin-toast-close:focus-visible {
+    outline: 0;
+    opacity: 1;
+    pointer-events: auto;
+    color: #334155;
+    background: #f1f5f9;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.12);
+}
+
+/* 无悬停能力的设备始终显示关闭按钮，避免无法手动关闭 */
+@media (hover: none) {
+    .admin-toast-close {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.admin-toast-progress {
+    position: relative;
+    height: 2px;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.admin-toast-progress::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 100%;
+    background: #cbd5e1;
+    transform-origin: left center;
+}
+
+.admin-toast.show .admin-toast-progress::after,
+.admin-toast.showing .admin-toast-progress::after {
+    animation: admin-toast-progress var(--admin-toast-duration) linear forwards;
+}
+
+/* 类型仅影响图标颜色，卡片本身保持白底灰边 */
+.admin-toast--success {
+    --admin-toast-accent: var(--nova-success);
+}
+
+.admin-toast--danger {
+    --admin-toast-accent: var(--nova-danger);
+}
+
+.admin-toast--warning {
+    --admin-toast-accent: var(--nova-warning);
+}
+
+.admin-toast--info {
+    --admin-toast-accent: var(--nova-accent);
+}
+
+@keyframes admin-toast-enter {
+    from {
+        opacity: 0;
+        transform: translate3d(12px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes admin-toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-toast.showing,
+    .admin-toast.show {
+        animation: none;
+    }
+
+    .admin-toast.show .admin-toast-progress::after,
+    .admin-toast.showing .admin-toast-progress::after {
+        animation: none;
+        transform: scaleX(0.2);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .toast-container {
+        right: 12px !important;
+        left: 12px !important;
+        max-width: none;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .admin-toast-inner {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .admin-toast .toast-body {
+        padding-right: 28px;
+        font-size: 13px;
+    }
+}
+
+.login-body {
+    position: relative;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--nova-text);
+    background: var(--nova-bg);
+}
+
+/* 登录页氛围背景：柔和光斑 + 轻网格，不干扰表单可读性。 */
+.login-ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.login-ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.55;
+}
+
+.login-ambient-orb--one {
+    top: -12%;
+    right: -8%;
+    width: min(52vw, 420px);
+    height: min(52vw, 420px);
+    background: radial-gradient(
+        circle at 35% 35%,
+        rgba(var(--nova-accent-rgb), 0.28),
+        rgba(var(--nova-accent-rgb), 0.04) 62%,
+        transparent 72%
+    );
+}
+
+.login-ambient-orb--two {
+    bottom: -18%;
+    left: -10%;
+    width: min(60vw, 480px);
+    height: min(60vw, 480px);
+    background: radial-gradient(
+        circle at 60% 40%,
+        rgba(15, 23, 42, 0.08),
+        rgba(15, 23, 42, 0.02) 58%,
+        transparent 72%
+    );
+}
+
+.login-ambient-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
+}
+
+.login-shell {
+    position: relative;
+    z-index: 1;
+    display: block;
+    min-height: 100vh;
+}
+
+.login-workspace {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 40px 20px;
+}
+
+.login-card {
+    width: min(420px, 100%);
+    padding: 36px 34px 32px;
+    border: 1px solid color-mix(in srgb, var(--nova-border) 88%, #ffffff);
+    border-radius: 18px;
+    background: color-mix(in srgb, #ffffff 92%, transparent);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 18px 50px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(14px);
+}
+
+.login-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.login-mark {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    place-items: center;
+    border-radius: 14px;
+    color: var(--nova-on-accent, #ffffff);
+    background: linear-gradient(
+        145deg,
+        var(--nova-accent) 0%,
+        color-mix(in srgb, var(--nova-accent) 72%, #0f172a) 100%
+    );
+    box-shadow: 0 10px 22px rgba(var(--nova-accent-rgb), 0.28);
+    font-family: var(--nova-font-display);
+    font-size: 24px;
+    line-height: 1;
+}
+
+.login-card-heading {
+    min-width: 0;
+    padding-top: 1px;
+}
+
+.login-card-kicker {
+    margin: 0 0 4px;
+    color: var(--nova-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.login-card-title {
+    margin: 0;
+    color: var(--nova-dark);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.login-card-subtitle {
+    margin: 6px 0 0;
+    color: var(--nova-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.login-form .form-label {
+    margin-bottom: 6px;
+    color: var(--nova-dark);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.login-input-group .input-group-text {
+    color: var(--nova-muted);
+    border-color: var(--nova-border);
+    background: #f8fafc;
+}
+
+.login-input-group .form-control {
+    border-color: var(--nova-border);
+}
+
+.login-input-group .form-control:focus,
+.login-form .form-control:focus {
+    border-color: color-mix(in srgb, var(--nova-accent) 55%, var(--nova-border));
+    box-shadow: var(--nova-control-focus-shadow);
+}
+
+.login-input-group:focus-within .input-group-text {
+    border-color: color-mix(in srgb, var(--nova-accent) 55%, var(--nova-border));
+    color: var(--nova-accent);
+}
+
+/* 隐藏 Edge/IE 等浏览器自带的密码显隐与清除按钮，避免与自定义眼睛按钮重复。 */
+.login-form #password::-ms-reveal,
+.login-form #password::-ms-clear {
+    display: none;
+}
+
+.login-password-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    color: var(--nova-muted, #64748b);
+    border-color: var(--nova-border, #e2e8f0);
+    background: #ffffff;
+}
+
+.login-password-toggle:hover,
+.login-password-toggle:focus-visible {
+    color: var(--nova-dark, #0f172a);
+    border-color: var(--nova-border, #e2e8f0);
+    background: #f8fafc;
+}
+
+.login-password-toggle .bi {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.login-captcha-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 124px;
+    gap: 10px;
+    align-items: center;
+}
+
+.login-captcha-row input {
+    min-width: 0;
+    min-height: 42px;
+    /* 保留用户输入的大小写外观；服务端校验仍不区分大小写。 */
+    letter-spacing: 0.12em;
+    font-family: var(--nova-font-mono, ui-monospace, monospace);
+}
+
+.login-captcha-image {
+    display: block;
+    width: 124px;
+    height: 42px;
+    border: 1px solid var(--nova-border);
+    border-radius: 8px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.login-captcha-image:hover,
+.login-captcha-image:focus-visible {
+    border-color: var(--nova-accent);
+    box-shadow: 0 0 0 3px rgba(var(--nova-accent-rgb), 0.18);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.login-field-hint {
+    margin: 6px 0 0;
+    color: var(--nova-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.login-remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--nova-muted);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.login-remember input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--nova-accent);
+    cursor: pointer;
+}
+
+.login-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--nova-dark);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.login-submit:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--nova-dark) 88%, #ffffff);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
+    transform: translateY(-1px);
+}
+
+.login-submit:disabled {
+    opacity: 0.78;
+    cursor: wait;
+}
+
+.login-submit-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.login-submit-spinner[hidden],
+.login-submit-label[hidden] {
+    display: none !important;
+}
+
+.login-footer-note {
+    margin: 0;
+    max-width: min(420px, 100%);
+    color: var(--nova-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-captcha-image,
+    .login-submit {
+        transition: none;
+    }
+
+    .login-captcha-image:hover,
+    .login-captcha-image:focus-visible,
+    .login-submit:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+@media (min-width: 992px) {
+    /*
+     * 覆盖 Bootstrap offcanvas-lg：桌面端作为流式侧栏参与 flex 布局，
+     * 禁止 fixed/transform，从根源消除切页整栏抖动。
+     */
+    .admin-sidebar.offcanvas-lg {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        display: flex !important;
+        height: 100% !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+        background-clip: border-box;
+    }
+
+    .admin-sidebar-mobile-header {
+        display: none;
+    }
+
+    /*
+     * 仅在用户主动折叠/展开后启用宽度过渡。
+     * 切页首屏绝不带 transition，避免宽度落定动画。
+     */
+    html.sidebar-transitions-ready .admin-sidebar {
+        transition: flex-basis 160ms ease, width 160ms ease, max-width 160ms ease;
+    }
+
+    .sidebar-collapsed {
+        --nova-sidebar-width: 84px;
+    }
+
+    .sidebar-collapsed .admin-sidebar .admin-sidebar-body {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .sidebar-collapsed .admin-brand-desktop {
+        justify-content: center;
+        margin-right: 0;
+        margin-left: 0;
+        overflow: hidden;
+    }
+
+    .sidebar-collapsed .admin-brand-desktop .admin-brand-name,
+    .sidebar-collapsed .sidebar-section-label,
+    .sidebar-collapsed .sidebar-link span {
+        display: none;
+    }
+
+    .sidebar-collapsed .sidebar-link {
+        justify-content: center;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+}
+
+@media (max-width: 1180px) {
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .health-panel {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr);
+        align-items: center;
+        gap: 18px;
+    }
+
+    .health-panel .panel-heading {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .health-status {
+        margin: 0;
+    }
+
+    .filter-grid,
+    .filter-grid-download {
+        grid-template-columns: repeat(3, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    /*
+     * 移动端恢复页面滚动，侧栏继续走 Bootstrap offcanvas 抽屉。
+     */
+    html.admin-layout,
+    html.admin-layout body.admin-body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .admin-shell {
+        display: block;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .admin-sidebar {
+        flex: none;
+        max-width: none;
+    }
+
+    .admin-sidebar .admin-sidebar-body {
+        height: 100%;
+    }
+
+    .admin-main {
+        height: auto;
+        overflow: visible;
+    }
+
+    .admin-sidebar {
+        box-shadow: 12px 0 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .admin-sidebar-body {
+        padding-top: 12px;
+    }
+
+    .admin-brand-desktop {
+        display: none;
+    }
+
+    .admin-topbar {
+        padding: 0 16px 0 10px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-content {
+        padding: 24px 16px 40px;
+    }
+
+    .topbar-end {
+        gap: 8px;
+    }
+
+    .topbar-actions .btn {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 13px;
+    }
+
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .metric-card {
+        min-height: 88px;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .metric-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        border-radius: var(--nova-radius-sm);
+        font-size: 15px;
+    }
+
+    .metric-card p,
+    .metric-card small {
+        font-size: 11px;
+    }
+
+    .metric-card strong {
+        font-size: 20px;
+    }
+
+    .health-panel {
+        display: block;
+    }
+
+    .health-panel .panel-heading {
+        margin-bottom: 18px;
+    }
+
+    .health-status {
+        margin: 0 0 18px;
+    }
+
+    .form-panel,
+    .compact-form-panel,
+    .trend-panel,
+    .health-panel {
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .password-workspace {
+        min-height: 0;
+        padding: 4px 0 16px;
+    }
+
+    .password-panel.compact-form-panel {
+        width: min(460px, 100%);
+        padding: 22px 18px 20px;
+        border-radius: 14px;
+    }
+
+    .password-panel-head {
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+    }
+
+    .trend-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .trend-heading-meta {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .chart-shell {
+        padding: 6px 2px 0;
+    }
+
+    .chart-wrap,
+    .chart-empty {
+        min-height: 260px;
+        height: 260px;
+    }
+
+    .chart-empty {
+        height: auto;
+    }
+
+    .site-config-panel {
+        padding: 16px 16px 0;
+        border-radius: 14px;
+    }
+
+    .config-tabs-shell {
+        margin: 0 -4px 18px;
+    }
+
+    .config-tabs {
+        flex-wrap: nowrap;
+        gap: 6px;
+        padding: 0 4px 8px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 0;
+        scroll-snap-type: x proximity;
+        scroll-padding-inline: 8px;
+    }
+
+    .config-tabs .nav-item {
+        scroll-snap-align: start;
+    }
+
+    .config-tabs .nav-link {
+        flex: 0 0 auto;
+        min-height: 40px;
+        gap: 6px;
+        padding: 8px 12px;
+        border: 1px solid var(--nova-border);
+        border-bottom: 1px solid var(--nova-border);
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    .config-tabs .nav-link:hover {
+        background: var(--nova-accent-soft);
+    }
+
+    .config-tabs .nav-link.active {
+        color: var(--nova-selection-ink);
+        border-color: color-mix(in srgb, var(--nova-accent) 42%, var(--nova-border));
+        background: var(--nova-accent-soft);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nova-accent) 18%, transparent);
+    }
+
+    .config-tabs .nav-link:focus-visible {
+        border-radius: 999px;
+    }
+
+    .config-tabs-shell::before {
+        background: linear-gradient(90deg, #fbfcfd 10%, transparent 100%);
+    }
+
+    .config-tabs-shell::after {
+        background: linear-gradient(270deg, #fbfcfd 10%, transparent 100%);
+    }
+
+    .theme-color-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .theme-preview-card {
+        position: static;
+    }
+
+    .mode-segment {
+        grid-template-columns: 1fr;
+    }
+
+    .mode-segment .btn {
+        min-height: 0;
+    }
+
+    .mode-segment-copy {
+        padding-right: 0;
+    }
+
+    .apk-package-head {
+        flex-wrap: wrap;
+    }
+
+    .apk-package-body {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .config-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        margin-left: -16px;
+        margin-right: -16px;
+        margin-bottom: 0;
+        padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+        border-radius: 0 0 14px 14px;
+    }
+
+    .form-panel:not(.site-config-panel) .config-form-actions {
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-bottom: -20px;
+        padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .config-form-actions-btns {
+        width: 100%;
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .config-form-actions .btn,
+    .config-save-btn {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .upload-row {
+        grid-template-columns: 1fr;
+    }
+
+    .config-inline-check {
+        width: 100%;
+        min-height: 40px;
+        margin-bottom: 0 !important;
+    }
+
+    .table-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .table-toolbar > div:not(.table-toolbar-actions) {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .table-toolbar-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .table-batch-actions {
+        margin-right: auto;
+    }
+
+    .pagination-wrap {
+        justify-content: center;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .login-workspace {
+        min-height: 100vh;
+        padding: 24px 16px 28px;
+    }
+
+    .login-captcha-row {
+        grid-template-columns: minmax(0, 1fr) 112px;
+    }
+
+    .login-captcha-image {
+        width: 112px;
+        max-width: 100%;
+    }
+
+    .login-card {
+        padding: 28px 22px 24px;
+        border-radius: 16px;
+    }
+
+    .login-card-title {
+        font-size: 20px;
+    }
+
+    .login-mark {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        border-radius: 12px;
+        font-size: 22px;
+    }
+
+    .filter-panel {
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .filter-grid,
+    .filter-grid-download {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions .btn {
+        flex: 1;
+    }
+
+    .content-form-modal-content .modal-body {
+        padding: 16px;
+    }
+
+    .log-detail-modal-content .modal-body {
+        padding: 16px;
+    }
+
+    .log-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .log-detail-field--wide {
+        grid-column: auto;
+    }
+
+    .content-form-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .admin-navigation-progress.is-loading {
+        animation: none;
+        transform: scaleX(0.72);
+    }
+}
+
+/* ---------- 主题配色选择器 ---------- */
+.theme-color-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.theme-color-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.75fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.theme-color-main {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.theme-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.theme-preset-swatch {
+    position: relative;
+    display: flex;
+    min-height: 76px;
+    align-items: flex-end;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 14px;
+    background:
+        linear-gradient(165deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 42%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0) 45%, rgba(15, 23, 42, 0.38) 100%),
+        var(--swatch-color, var(--nova-accent));
+    color: #ffffff;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        0 1px 2px rgba(15, 23, 42, 0.06),
+        0 6px 16px rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    isolation: isolate;
+    text-align: left;
+    transition:
+        box-shadow 160ms ease,
+        transform 160ms ease,
+        filter 160ms ease;
+}
+
+.theme-preset-swatch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+}
+
+.theme-preset-swatch:hover {
+    transform: translateY(-2px);
+    filter: saturate(1.05) brightness(1.03);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        0 4px 8px rgba(15, 23, 42, 0.08),
+        0 14px 28px rgba(15, 23, 42, 0.14);
+}
+
+.theme-preset-swatch:focus-visible {
+    outline: 0;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        0 0 0 3px rgba(var(--nova-accent-rgb), 0.28),
+        0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.theme-preset-swatch.is-selected {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 0 0 2px #ffffff,
+        0 0 0 4px var(--swatch-color, var(--nova-accent)),
+        0 10px 24px rgba(15, 23, 42, 0.16);
+}
+
+.theme-preset-swatch.is-selected:hover {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 0 0 2px #ffffff,
+        0 0 0 4px var(--swatch-color, var(--nova-accent)),
+        0 14px 28px rgba(15, 23, 42, 0.18);
+}
+
+.theme-preset-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--swatch-color, var(--nova-accent));
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.12),
+        0 4px 10px rgba(15, 23, 42, 0.1);
+    font-size: 13px;
+    opacity: 0;
+    transform: scale(0.72);
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.theme-preset-swatch.is-selected .theme-preset-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.theme-preset-label {
+    position: relative;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.4);
+}
+
+.theme-custom-row .form-label {
+    margin-bottom: 8px;
+}
+
+.theme-custom-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-color-input {
+    width: 48px;
+    height: 42px;
+    padding: 4px;
+    border: 1px solid var(--nova-border);
+    border-radius: 8px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.theme-color-hex {
+    width: min(100%, 148px);
+}
+
+.theme-preview-card {
+    position: sticky;
+    top: 84px;
+    padding: 18px;
+    border: 1px solid var(--nova-border);
+    border-radius: 16px;
+    background:
+        linear-gradient(165deg, color-mix(in srgb, var(--nova-accent-soft) 55%, #ffffff) 0%, #ffffff 48%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.theme-preview-note {
+    margin: 14px 0 0;
+    color: var(--nova-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.theme-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.theme-preview-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--nova-accent);
+    box-shadow: 0 0 0 3px var(--nova-accent-soft);
+}
+
+.theme-preview-header strong {
+    color: var(--nova-dark);
+    font-size: 13px;
+}
+
+.theme-preview-hex {
+    margin-left: auto;
+    color: var(--nova-muted);
+    font-size: 12px;
+}
+
+.theme-preview-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid color-mix(in srgb, var(--nova-border) 80%, var(--nova-accent-border));
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.78);
+}
+
+.theme-preview-mock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.theme-preview-mock-bar {
+    display: block;
+    width: 42%;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--nova-accent);
+    opacity: 0.9;
+}
+
+.theme-preview-mock-line {
+    display: block;
+    width: 88%;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--nova-accent-soft-strong);
+}
+
+.theme-preview-mock-line.is-short {
+    width: 62%;
+    background: var(--nova-accent-soft);
+}
+
+.theme-preview-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-preview-btn {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 999px;
+    color: var(--nova-on-accent, #ffffff);
+    background: var(--nova-accent);
+    box-shadow: var(--nova-accent-glow);
+    font-size: 13px;
+    font-weight: 650;
+    pointer-events: none;
+}
+
+.theme-preview-chip {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.theme-preview-soft {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 4px 10px;
+    border: 1px solid var(--nova-accent-border);
+    border-radius: 8px;
+    color: var(--nova-selection-ink);
+    background: var(--nova-accent-soft-strong);
+    font-size: 12px;
+}
+
+@media (max-width: 767px) {
+    .config-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .config-card-head {
+        gap: 10px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+    }
+
+    .config-card-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    .config-card-compact {
+        max-width: none;
+    }
+
+    .config-asset-tile {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .config-asset-tile .asset-field .input-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .config-asset-tile .asset-field .form-control {
+        width: 100%;
+        border-radius: 8px !important;
+    }
+
+    .config-asset-tile .asset-field [data-image-submit] {
+        width: 100%;
+        min-height: 42px;
+        border-radius: 8px !important;
+    }
+
+    .config-switch-card {
+        min-height: 0;
+    }
+
+    .config-rule-grid .col-md-6 {
+        width: 100%;
+    }
+
+    .theme-preset-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .theme-preset-swatch {
+        min-height: 72px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .theme-custom-controls {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .theme-color-input {
+        grid-row: 1;
+        width: 48px;
+        height: 42px;
+    }
+
+    .theme-color-hex {
+        grid-column: 2;
+        width: 100%;
+    }
+
+    .theme-custom-controls .btn {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 42px;
+    }
+
+    .theme-preview-stage {
+        padding: 12px;
+    }
+
+    .config-form-actions-copy strong {
+        font-size: 13.5px;
+    }
+
+    .config-form-actions-copy > span[data-config-save-hint] {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .theme-preset-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .theme-color-layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .site-config-panel {
+        padding: 24px 24px 0;
+    }
+
+    .site-config-panel .config-form-actions {
+        margin-left: -24px;
+        margin-right: -24px;
+        padding-right: 24px;
+        padding-left: 24px;
+    }
+
+    .theme-preset-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
