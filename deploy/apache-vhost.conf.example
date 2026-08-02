@@ -1,0 +1,30 @@
+<VirtualHost *:80>
+    ServerName download.example.com
+    DocumentRoot "/www/wwwroot/nova-download/public"
+
+    # 网站运行目录必须指向 public，项目根目录默认拒绝访问。
+    <Directory "/www/wwwroot/nova-download">
+        Require all denied
+    </Directory>
+
+    <Directory "/www/wwwroot/nova-download/public">
+        Options -Indexes +FollowSymLinks
+        AllowOverride FileInfo AuthConfig Limit Options
+        Require all granted
+
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^ index.php [QSA,L]
+    </Directory>
+
+    # 310MB 上限略高于应用默认允许的 300MB 本地安装包；调整应用上限时需同步修改。
+    LimitRequestBody 325058560
+
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    ErrorLog "/www/wwwlogs/nova-download.error.log"
+    CustomLog "/www/wwwlogs/nova-download.access.log" combined
+</VirtualHost>

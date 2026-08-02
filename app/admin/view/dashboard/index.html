@@ -1,0 +1,69 @@
+{extend name="layout/saas" /}
+
+{block name="content"}
+<section class="metric-grid" aria-label="今日指标">
+    <article class="metric-card">
+        <div class="metric-icon metric-icon-blue"><i class="bi bi-eye" aria-hidden="true"></i></div>
+        <div><p>今日访问</p><strong>{$metrics.today_visits}</strong><small>昨日 {$metrics.yesterday_visits}</small></div>
+    </article>
+    <article class="metric-card">
+        <div class="metric-icon metric-icon-green"><i class="bi bi-download" aria-hidden="true"></i></div>
+        <div><p>今日下载</p><strong>{$metrics.today_downloads}</strong><small>下载接口命中</small></div>
+    </article>
+    <article class="metric-card">
+        <div class="metric-icon metric-icon-amber"><i class="bi bi-people" aria-hidden="true"></i></div>
+        <div><p>独立 IP</p><strong>{$metrics.today_unique_ips}</strong><small>今日去重访问</small></div>
+    </article>
+    <article class="metric-card">
+        <div class="metric-icon metric-icon-dark"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div>
+        <div><p>下载转化率</p><strong>{$metrics.conversion_rate}%</strong><small>访问到下载</small></div>
+    </article>
+</section>
+
+<section class="dashboard-grid">
+    <article class="surface-panel trend-panel">
+        <div class="panel-heading trend-panel-heading">
+            <div>
+                <h2>近 7 日趋势</h2>
+                <p>访问与下载按自然日聚合</p>
+            </div>
+            <div class="trend-heading-meta">
+                <div class="trend-legend" aria-hidden="true">
+                    <span class="trend-legend-item">
+                        <i class="trend-swatch" data-trend-swatch="visits"></i>
+                        <span>访问</span>
+                    </span>
+                    <span class="trend-legend-item">
+                        <i class="trend-swatch" data-trend-swatch="downloads"></i>
+                        <span>下载</span>
+                    </span>
+                </div>
+                <span class="data-badge">7 DAYS</span>
+            </div>
+        </div>
+        {if $hasTrend}
+        <div class="chart-shell">
+            <div class="chart-wrap">
+                <canvas id="trendChart" aria-label="近 7 日访问与下载趋势" role="img"></canvas>
+            </div>
+        </div>
+        {else}
+        <div class="chart-empty">
+            <span class="chart-empty-icon" aria-hidden="true"><i class="bi bi-graph-up"></i></span>
+            <strong>暂无趋势数据</strong>
+            <span>产生访问与下载记录后，这里会显示近七日变化。</span>
+        </div>
+        {/if}
+    </article>
+
+    <aside class="surface-panel health-panel">
+        <div class="panel-heading"><div><h2>分发健康</h2><p>当前下载链路</p></div></div>
+        <div class="health-status {if $health.ready}is-ready{else}is-warning{/if}">
+            <i class="bi {if $health.ready}bi-check-circle{else}bi-exclamation-circle{/if}" aria-hidden="true"></i>
+            <div><strong>{$health.mode}</strong><span>{$health.message}</span></div>
+        </div>
+    </aside>
+</section>
+
+{if $hasTrend}<script type="application/json" id="trendData">{$trendJson|raw}</script>{/if}
+{/block}

@@ -1,0 +1,49 @@
+server {
+    listen 80;
+    server_name download.example.com;
+
+    # 网站运行目录必须指向 public，不能指向项目根目录。
+    root /www/wwwroot/nova-download/public;
+    index index.php;
+    charset utf-8;
+    client_max_body_size 310m;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location / {
+        try_files $uri $uri/ /index.php?s=$uri&$args;
+    }
+
+    # 即使上传目录出现异常文件，也禁止脚本执行或源码访问。
+    location ~* ^/uploads/.*\.(?:php[0-9]?|phtml|phar|cgi|pl|py|sh)$ {
+        return 403;
+    }
+
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTP_PROXY "";
+
+        # 按宝塔实际 PHP 版本修改，例如 PHP 8.0 使用 php-cgi-80.sock。
+        fastcgi_pass unix:/tmp/php-cgi-80.sock;
+    }
+
+    location ~ \.php(?:/|$) {
+        return 404;
+    }
+
+    location ~* \.(?:css|js|png|jpe?g|webp|svg|ico|woff2?)$ {
+        expires 7d;
+        access_log off;
+        try_files $uri =404;
+    }
+
+    location ~ /\.(?!well-known/) {
+        deny all;
+    }
+
+    access_log /www/wwwlogs/nova-download.access.log;
+    error_log /www/wwwlogs/nova-download.error.log;
+}

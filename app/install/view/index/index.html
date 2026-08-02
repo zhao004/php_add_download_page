@@ -1,0 +1,22 @@
+{extend name="layout/base" /}
+
+{block name="content"}
+<article class="install-card">
+    <p class="eyebrow text-accent">NOVA INSTALLER</p>
+    <h2>准备安装</h2>
+    <p class="lead">安装器会创建数据表、管理员账号、环境配置和安装锁。现有同名数据表或配置文件不会被覆盖。</p>
+
+    <div class="notice" role="note">
+        <strong>开始前确认</strong>
+        <ul>
+            <li>网站运行目录已经指向 <code>public</code></li>
+            <li>已准备 MySQL 5.7 或 8.0 的连接信息</li>
+            <li>项目目录和上传目录允许 PHP 写入</li>
+        </ul>
+    </div>
+
+    <div class="actions actions-end">
+        <a class="button button-primary" href="/install/environment">开始检测环境</a>
+    </div>
+</article>
+{/block}

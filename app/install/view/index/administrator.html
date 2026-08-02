@@ -1,0 +1,41 @@
+{extend name="layout/base" /}
+
+{block name="content"}
+<article class="install-card">
+    <p class="eyebrow text-accent">ADMINISTRATOR</p>
+    <h2>创建管理员</h2>
+    <p class="lead">确认后将向 <code>{$databaseName}</code> 导入数据结构并生成站点配置。</p>
+
+    {if $error}
+    <div class="alert alert-danger" role="alert">{$error}</div>
+    {/if}
+
+    <form method="post" action="/install/administrator">
+        <input type="hidden" name="_token" value="{$csrfToken}">
+
+        <label class="field">
+            <span>管理员用户名</span>
+            <input type="text" name="admin_username" value="{$username}" minlength="4" maxlength="32" pattern="[A-Za-z][A-Za-z0-9_]{3,31}" required autocomplete="username">
+            <small>以字母开头，可使用字母、数字和下划线。</small>
+        </label>
+
+        <label class="field">
+            <span>管理员密码</span>
+            <input type="password" name="admin_password" minlength="10" maxlength="72" required autocomplete="new-password">
+            <small>10 至 72 位，至少包含大小写字母、数字、特殊字符中的三类。</small>
+        </label>
+
+        <label class="field">
+            <span>确认密码</span>
+            <input type="password" name="admin_password_confirmation" minlength="10" maxlength="72" required autocomplete="new-password">
+        </label>
+
+        <div class="alert alert-neutral" role="note">提交期间请保持页面打开。失败时不会生成安装锁，也不会保留本次新建的数据表。</div>
+
+        <div class="actions">
+            <a class="button button-secondary" href="/install/database">返回</a>
+            <button class="button button-primary" type="submit">执行安装</button>
+        </div>
+    </form>
+</article>
+{/block}

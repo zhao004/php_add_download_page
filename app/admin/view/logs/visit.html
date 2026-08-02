@@ -1,0 +1,102 @@
+{extend name="layout/saas" /}
+
+{block name="content"}
+<section class="surface-panel filter-panel">
+    <form method="get" action="/admin/logs/visit">
+        <div class="filter-grid">
+            <label><span>开始日期</span><input class="form-control" type="date" name="date_from" value="{$filters.date_from}"></label>
+            <label><span>结束日期</span><input class="form-control" type="date" name="date_to" value="{$filters.date_to}"></label>
+            <label><span>IP</span><input class="form-control font-monospace" name="ip" value="{$filters.ip}" maxlength="45" placeholder="支持片段"></label>
+            <label><span>城市</span><input class="form-control" name="city" value="{$filters.city}" maxlength="64"></label>
+            <label><span>运营商</span><input class="form-control" name="isp" value="{$filters.isp}" maxlength="128"></label>
+            <label><span>设备</span><select class="form-select" name="device_type"><option value="">全部</option><option value="mobile" {if $filters.device_type == 'mobile'}selected{/if}>移动端</option><option value="desktop" {if $filters.device_type == 'desktop'}selected{/if}>桌面端</option><option value="tablet" {if $filters.device_type == 'tablet'}selected{/if}>平板</option><option value="bot" {if $filters.device_type == 'bot'}selected{/if}>机器人</option><option value="unknown" {if $filters.device_type == 'unknown'}selected{/if}>未知</option></select></label>
+        </div>
+        <div class="filter-actions"><a class="btn btn-light" href="/admin/logs/visit">重置</a><button class="btn btn-dark" type="submit"><i class="bi bi-funnel me-2" aria-hidden="true"></i>筛选</button></div>
+    </form>
+</section>
+
+<section class="surface-panel table-panel log-table-panel" data-batch-table>
+    <div class="table-toolbar">
+        <div><strong>共 {$total} 条</strong><span>访问成功渲染后写入；重复访问按站点策略去重。</span></div>
+        {if !empty($items)}
+        <form
+            class="table-batch-actions"
+            id="log-batch-delete"
+            method="post"
+            action="/admin/logs/visit/batch-delete"
+            data-batch-form
+            data-admin-ajax-form
+            data-admin-ajax-reload
+            data-confirm-template="确认删除选中的 {count} 条访问日志？删除后无法恢复。"
+            data-confirm="确认删除选中的访问日志？删除后无法恢复。"
+        >
+            <input type="hidden" name="_token" value="{$csrfToken}">
+            <span class="table-batch-count" data-batch-count hidden>已选 0 项</span>
+            <button class="btn btn-sm btn-outline-danger" type="submit" data-batch-delete disabled>
+                <i class="bi bi-trash me-1" aria-hidden="true"></i>批量删除
+            </button>
+        </form>
+        {/if}
+    </div>
+    {if empty($items)}
+    <div class="empty-state"><i class="bi bi-activity" aria-hidden="true"></i><h2>暂无访问日志</h2><p>访问前台下载页后，记录会出现在这里。</p></div>
+    {else}
+    <div
+        class="table-responsive admin-table-scroll"
+        role="region"
+        tabindex="0"
+        aria-label="访问日志列表，可横向滚动查看"
+    >
+        <table class="table admin-table log-table align-middle mb-0">
+            <thead>
+            <tr>
+                <th scope="col" class="select-column">
+                    <input class="form-check-input" type="checkbox" data-batch-select-all aria-label="全选当前页">
+                </th>
+                <th>时间</th>
+                <th>IP</th>
+                <th>归属地 · 运营商</th>
+                <th>设备</th>
+                <th>路径</th>
+                <th>来源</th>
+                <th>User-Agent</th>
+                <th scope="col" class="action-column"><span class="visually-hidden">操作</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name="items" id="item"}
+            <tr data-batch-row>
+                <td class="select-cell" data-label="选择">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="ids[]"
+                        value="{$item.id}"
+                        form="log-batch-delete"
+                        data-batch-item
+                        aria-label="选择访问日志 {$item.id}"
+                    >
+                </td>
+                <td class="font-monospace log-time" data-label="时间">{$item.created_at}</td>
+                <td data-label="IP"><div class="ip-cell"><code>{$item.ip}</code><button class="btn btn-sm btn-icon" type="button" data-copy-text="{$item.ip}" title="复制 IP" aria-label="复制 IP"><i class="bi bi-copy" aria-hidden="true"></i></button></div></td>
+                <td data-label="归属地 · 运营商"><span class="location-text" title="{$item.region_raw}">{$item._location}</span></td>
+                <td data-label="设备"><span class="device-pill device-{$item.device_type}">{$item.device_type}</span></td>
+                <td data-label="路径"><span class="table-value font-monospace" title="{$item.method} {$item.path}">{$item.path}</span></td>
+                <td data-label="来源"><span class="table-value" title="{$item.referer}">{$item.referer|default='-'}</span></td>
+                <td data-label="User-Agent"><span class="table-value user-agent" title="{$item.user_agent}">{$item.user_agent|default='-'}</span></td>
+                <td class="action-cell" data-label="操作">
+                    <div class="table-actions">
+                        <button class="btn btn-sm btn-icon" type="button" data-log-detail-trigger data-log-type="visit" data-log-id="{$item.id}" title="查看详情" aria-label="查看访问日志 {$item.id} 详情"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+    {if $totalPages > 1}
+    <nav class="pagination-wrap" aria-label="访问日志分页"><a class="btn btn-sm btn-light {if $page <= 1}disabled{/if}" href="{$previousUrl}" aria-label="上一页"><i class="bi bi-chevron-left"></i></a><span>第 {$page} / {$totalPages} 页</span><a class="btn btn-sm btn-light {if $page >= $totalPages}disabled{/if}" href="{$nextUrl}" aria-label="下一页"><i class="bi bi-chevron-right"></i></a></nav>
+    {/if}
+    {/if}
+</section>
+{/block}

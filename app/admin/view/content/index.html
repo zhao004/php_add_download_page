@@ -1,0 +1,133 @@
+{extend name="layout/saas" /}
+
+{block name="content"}
+<section class="surface-panel table-panel" data-batch-table>
+    <div class="table-toolbar">
+        <div><strong>共 {$total} 条</strong><span>前台只读取已启用记录，并按排序值升序展示。</span></div>
+        <div class="table-toolbar-actions">
+            {if !empty($items)}
+            <form
+                class="table-batch-actions"
+                id="content-batch-delete"
+                method="post"
+                action="/admin/content/{$resource}/batch-delete"
+                data-batch-form
+                data-admin-ajax-form
+                data-admin-ajax-reload
+                data-confirm-template="确认删除选中的 {count} 条{$definition.singular}？删除后无法恢复。"
+                data-confirm="确认删除选中的记录？删除后无法恢复。"
+            >
+                <input type="hidden" name="_token" value="{$csrfToken}">
+                <span class="table-batch-count" data-batch-count hidden>已选 0 项</span>
+                <button class="btn btn-sm btn-outline-danger" type="submit" data-batch-delete disabled>
+                    <i class="bi bi-trash me-1" aria-hidden="true"></i>批量删除
+                </button>
+            </form>
+            {/if}
+            <a class="btn btn-sm btn-dark" href="/admin/content/{$resource}/create" data-content-modal-url>
+                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>新建{$definition.singular}
+            </a>
+        </div>
+    </div>
+
+    {if empty($items)}
+    <div class="empty-state">
+        <i class="bi {$definition.icon}" aria-hidden="true"></i>
+        <h2>还没有{$definition.singular}</h2>
+        <p>没有启用数据时，前台会完整隐藏对应区块。</p>
+        <a class="btn btn-dark" href="/admin/content/{$resource}/create" data-content-modal-url>创建第一条记录</a>
+    </div>
+    {else}
+    <div
+        class="table-responsive admin-table-scroll"
+        role="region"
+        tabindex="0"
+        aria-label="内容列表，可横向滚动查看"
+    >
+        <table class="table admin-table align-middle mb-0">
+            <thead>
+            <tr>
+                <th scope="col" class="select-column">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        data-batch-select-all
+                        aria-label="全选当前页"
+                    >
+                </th>
+                <th scope="col" class="id-column">ID</th>
+                {volist name="definition.columns" id="column"}<th scope="col">{$column.label}</th>{/volist}
+                <th scope="col">排序</th>
+                <th scope="col" class="content-status-column">状态</th>
+                <th scope="col" class="action-column"><span class="visually-hidden">操作</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name="items" id="item"}
+            <tr data-batch-row>
+                <td class="select-cell" data-label="选择">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="ids[]"
+                        value="{$item.id}"
+                        form="content-batch-delete"
+                        data-batch-item
+                        aria-label="选择“{$item._title}”"
+                    >
+                </td>
+                <td class="font-monospace text-secondary" data-label="ID">{$item.id}</td>
+                {volist name="item._display" id="displayField"}
+                <td data-label="{$displayField.label}"><span class="table-value" title="{$displayField.value}">{$displayField.value|default='-'}</span></td>
+                {/volist}
+                <td class="font-monospace" data-label="排序">{$item.sort}</td>
+                <td class="content-status-cell content-status-column" data-label="状态">
+                    <form
+                        class="content-status-form"
+                        method="post"
+                        action="/admin/content/{$resource}/toggle/{$item.id}"
+                        data-admin-ajax-form
+                        data-admin-ajax-reload
+                        data-content-status-form
+                    >
+                        <input type="hidden" name="_token" value="{$csrfToken}">
+                        <input type="hidden" name="status" value="{if $item.status == 1}1{else}0{/if}" data-content-status-value>
+                        <div class="form-check form-switch content-status-switch">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="content-status-{$item.id}"
+                                data-content-status-switch
+                                data-current-status="{if $item.status == 1}1{else}0{/if}"
+                                aria-label="切换“{$item._title}”的前台展示状态"
+                                {if $item.status == 1}checked{/if}
+                            >
+                        </div>
+                    </form>
+                </td>
+                <td class="action-cell" data-label="操作">
+                    <div class="table-actions">
+                        <a class="btn btn-sm btn-icon" href="/admin/content/{$resource}/edit/{$item.id}" data-content-modal-url title="编辑" aria-label="编辑"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                        <form method="post" action="/admin/content/{$resource}/delete/{$item.id}" data-admin-ajax-form data-admin-ajax-reload data-confirm="确认删除“{$item._title}”？删除后无法恢复。">
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <button class="btn btn-sm btn-icon text-danger" type="submit" title="删除" aria-label="删除"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+
+    {if $totalPages > 1}
+    <nav class="pagination-wrap" aria-label="内容分页">
+        <a class="btn btn-sm btn-light {if $page <= 1}disabled{/if}" href="?page={$previousPage}" aria-label="上一页"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>
+        <span>第 {$page} / {$totalPages} 页</span>
+        <a class="btn btn-sm btn-light {if $page >= $totalPages}disabled{/if}" href="?page={$nextPage}" aria-label="下一页"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+    </nav>
+    {/if}
+    {/if}
+</section>
+{/block}

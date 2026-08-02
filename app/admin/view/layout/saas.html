@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN" class="admin-layout">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{$pageTitle} · {$siteName}</title>
+    <link rel="icon" href="{$faviconUrl|default='/favicon.ico'}" data-site-favicon>
+    <link rel="stylesheet" href="/static/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/ui/tokens.css">
+    <link rel="stylesheet" href="/static/admin/admin.css">
+    {if !empty($themeStyle)}{$themeStyle|raw}{/if}
+    <script>
+        // 在首次绘制前同步恢复桌面侧栏状态；禁用过渡类，避免切换页面时导航抖动。
+        try {
+            document.documentElement.classList.add('admin-layout');
+            if (localStorage.getItem('nova.admin.sidebarCollapsed') === 'true') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+            document.documentElement.classList.remove('sidebar-transitions-ready');
+            document.documentElement.classList.remove('sidebar-nav-interactive');
+        } catch (error) {
+            // 浏览器禁用本地存储时保留默认展开状态，不影响后台核心功能。
+        }
+    </script>
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel" data-admin-sidebar>
+        <div class="offcanvas-header admin-sidebar-mobile-header">
+            <a class="admin-brand" href="/admin" id="adminSidebarLabel" title="{$siteName}">
+                <span class="admin-brand-mark" aria-hidden="true">{$siteNameInitial}</span>
+                <span class="admin-brand-name">{$siteName}</span>
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="关闭导航"></button>
+        </div>
+        <div class="offcanvas-body admin-sidebar-body">
+            <a class="admin-brand admin-brand-desktop" href="/admin" title="{$siteName}">
+                <span class="admin-brand-mark" aria-hidden="true">{$siteNameInitial}</span>
+                <span class="admin-brand-name">{$siteName}</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="后台主导航" data-admin-sidebar-nav>
+                {// 顺序：概览 → 基础配置 → 落地页区块（与前台自上而下一致）→ 运营数据}
+                <p class="sidebar-section-label">概览</p>
+                <a class="sidebar-link {if $activeNav == 'dashboard'}active{/if}" href="/admin" data-admin-nav-link {if $activeNav == 'dashboard'}aria-current="page"{/if}>
+                    <i class="bi bi-grid-1x2" aria-hidden="true"></i><span>仪表盘</span>
+                </a>
+
+                <p class="sidebar-section-label">配置</p>
+                <a class="sidebar-link {if $activeNav == 'site'}active{/if}" href="/admin/site" data-admin-nav-link {if $activeNav == 'site'}aria-current="page"{/if}>
+                    <i class="bi bi-sliders" aria-hidden="true"></i><span>站点配置</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'download'}active{/if}" href="/admin/download" data-admin-nav-link {if $activeNav == 'download'}aria-current="page"{/if}>
+                    <i class="bi bi-download" aria-hidden="true"></i><span>下载配置</span>
+                </a>
+
+                <p class="sidebar-section-label">落地页</p>
+                <a class="sidebar-link {if $activeNav == 'content_nav'}active{/if}" href="/admin/content/nav" data-admin-nav-link {if $activeNav == 'content_nav'}aria-current="page"{/if}>
+                    <i class="bi bi-compass" aria-hidden="true"></i><span>顶栏导航</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'content_preview'}active{/if}" href="/admin/content/preview" data-admin-nav-link {if $activeNav == 'content_preview'}aria-current="page"{/if}>
+                    <i class="bi bi-images" aria-hidden="true"></i><span>预览页面</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'content_feature'}active{/if}" href="/admin/content/feature" data-admin-nav-link {if $activeNav == 'content_feature'}aria-current="page"{/if}>
+                    <i class="bi bi-grid" aria-hidden="true"></i><span>功能卡片</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'content_trust'}active{/if}" href="/admin/content/trust" data-admin-nav-link {if $activeNav == 'content_trust'}aria-current="page"{/if}>
+                    <i class="bi bi-patch-check" aria-hidden="true"></i><span>信任品牌</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'content_friend'}active{/if}" href="/admin/content/friend" data-admin-nav-link {if $activeNav == 'content_friend'}aria-current="page"{/if}>
+                    <i class="bi bi-link-45deg" aria-hidden="true"></i><span>友情链接</span>
+                </a>
+
+                <p class="sidebar-section-label">数据</p>
+                <a class="sidebar-link {if $activeNav == 'visit_logs'}active{/if}" href="/admin/logs/visit" data-admin-nav-link {if $activeNav == 'visit_logs'}aria-current="page"{/if}>
+                    <i class="bi bi-activity" aria-hidden="true"></i><span>访问日志</span>
+                </a>
+                <a class="sidebar-link {if $activeNav == 'download_logs'}active{/if}" href="/admin/logs/download" data-admin-nav-link {if $activeNav == 'download_logs'}aria-current="page"{/if}>
+                    <i class="bi bi-download" aria-hidden="true"></i><span>下载日志</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="admin-main" data-admin-main>
+        <header class="admin-topbar" data-admin-topbar>
+            <button class="btn topbar-nav-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="打开导航">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+            <button class="btn topbar-nav-btn d-none d-lg-grid" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" title="收起侧栏" aria-label="收起侧栏">
+                <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
+            </button>
+            <h1 class="topbar-title" data-admin-page-title>{$pageTitle}</h1>
+            <div class="topbar-end ms-auto">
+                <div class="topbar-actions" data-admin-page-actions>{block name="page_actions"}{/block}</div>
+                <div class="dropdown topbar-account">
+                    <button class="topbar-user topbar-user-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="打开用户菜单">
+                        <span class="user-avatar" aria-hidden="true">{$adminUser.username|substr=0,1|strtoupper}</span>
+                        <span class="user-name">{$adminUser.username}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end topbar-user-menu">
+                        <li><a class="dropdown-item" href="/admin/account/password"><i class="bi bi-shield-lock" aria-hidden="true"></i>修改密码</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="/admin/logout">
+                                <input type="hidden" name="_token" value="{$csrfToken}">
+                                <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>退出登录</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="admin-navigation-progress" data-admin-navigation-progress aria-hidden="true"></div>
+            <span class="visually-hidden" data-admin-navigation-status aria-live="polite"></span>
+        </header>
+
+        <main class="admin-content" data-admin-content tabindex="-1">
+            {block name="content"}{/block}
+        </main>
+    </div>
+</div>
+
+<div
+    id="adminToastContainer"
+    class="toast-container position-fixed top-0 end-0 p-3"
+    data-toast-max="3"
+    aria-live="polite"
+    aria-relevant="additions"
+>
+    {volist name="flashes" id="flashItem"}
+    <div
+        class="toast admin-toast admin-toast--{$flashItem.type}"
+        role="status"
+        aria-atomic="true"
+        data-toast-type="{$flashItem.type}"
+        data-bs-delay="4200"
+        data-bs-autohide="true"
+    >
+        <div class="admin-toast-inner">
+            <span class="admin-toast-icon" aria-hidden="true">
+                {if $flashItem.type == 'success'}<i class="bi bi-check-circle-fill"></i>
+                {elseif $flashItem.type == 'danger'}<i class="bi bi-x-circle-fill"></i>
+                {elseif $flashItem.type == 'warning'}<i class="bi bi-exclamation-triangle-fill"></i>
+                {else /}<i class="bi bi-info-circle-fill"></i>
+                {/if}
+            </span>
+            <div class="toast-body">{$flashItem.message}</div>
+            <button type="button" class="admin-toast-close" data-bs-dismiss="toast" aria-label="关闭">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="admin-toast-progress" aria-hidden="true"></div>
+    </div>
+    {/volist}
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-6" id="confirmModalTitle">确认操作</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body" data-confirm-message>此操作无法撤销，确认继续？</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" data-confirm-submit>确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="contentFormModal" tabindex="-1" aria-labelledby="contentFormModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content content-form-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-6" id="contentFormModalTitle">编辑内容</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body" data-content-modal-body aria-live="polite">
+                <div class="content-modal-loading">正在加载表单...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-labelledby="logDetailModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content log-detail-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-6" id="logDetailModalTitle">日志详情</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body" data-log-detail-body aria-live="polite">
+                <div class="log-detail-loading">正在加载详情...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="/static/admin/dashboard.js"></script>
+<script src="/static/admin/admin.js"></script>
+{block name="scripts"}{/block}
+</body>
+</html>

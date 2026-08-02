@@ -1,0 +1,13 @@
+/.idea
+/.vscode
+/vendor
+*.log
+.env
+/install.lock
+/runtime/*
+!/runtime/.gitkeep
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/.htaccess
+.playwright-mcp/
+docs/

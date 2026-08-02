@@ -1,0 +1,43 @@
+<form class="content-resource-form" method="post" action="{$actionUrl}" data-content-form data-admin-dirty-form>
+    <input type="hidden" name="_token" value="{$csrfToken}">
+
+    {volist name="formFields" id="field"}
+    <div class="mb-3">
+        <label class="form-label" for="field_{$field.key}">{$field.label}</label>
+        {if $field.type == 'textarea'}
+        <textarea class="form-control" id="field_{$field.key}" name="{$field.key}" rows="4" maxlength="{$field.max}" {if $field.required}required{/if}>{$field.value}</textarea>
+        {elseif $field.type == 'select'}
+        <select class="form-select" id="field_{$field.key}" name="{$field.key}">
+            {foreach name="field.options" item="optionLabel" key="optionValue"}
+            <option value="{$optionValue}" {if $field.value == $optionValue}selected{/if}>{$optionLabel}</option>
+            {/foreach}
+        </select>
+        {else}
+        {if isset($field.upload)}
+        <div class="asset-field" data-image-upload data-target="field_{$field.key}" data-category="{$field.upload}" data-token="{$csrfToken}" data-image-max-bytes="{$uploadLimits.image_max_bytes}" data-image-max-mb="{$uploadLimits.image_max_mb}" data-svg-max-bytes="{$uploadLimits.svg_max_bytes}" data-svg-max-mb="{$uploadLimits.svg_max_mb}">
+            <div class="input-group">
+                <input class="form-control font-monospace" id="field_{$field.key}" name="{$field.key}" value="{$field.value}" maxlength="{$field.max}" {if $field.required}required{/if}>
+                <input class="asset-file-input" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg,image/png,image/jpeg,image/gif,image/webp,image/svg+xml" tabindex="-1" aria-hidden="true" data-image-file>
+                <button class="btn btn-outline-dark" type="button" data-image-submit title="选择并上传图片">上传</button>
+            </div>
+            <div class="asset-preview-row">
+                <img class="asset-preview {if !$field.value}d-none{/if}" src="{$field.value|default=''}" alt="" data-image-preview>
+                <span class="asset-feedback" data-image-feedback aria-live="polite"></span>
+            </div>
+        </div>
+        {else}
+        <input class="form-control {if in_array($field.key, ['url','image','link_url','logo'])}font-monospace{/if}" id="field_{$field.key}" name="{$field.key}" value="{$field.value}" maxlength="{$field.max}" {if $field.required}required{/if}>
+        {/if}
+        {/if}
+    </div>
+    {/volist}
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6"><label class="form-label" for="sort">排序值</label><input class="form-control" type="number" id="sort" name="sort" value="{$values.sort|default=0}" min="-999999" max="999999" required><div class="form-text">数值越小越靠前。</div></div>
+        <div class="col-sm-6 d-flex align-items-end"><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" role="switch" id="status" name="status" value="1" {if $values.status == 1}checked{/if}><label class="form-check-label" for="status">启用并在前台展示</label></div></div>
+    </div>
+
+    <div class="content-form-actions">
+        <button class="btn btn-dark" type="submit"><i class="bi bi-floppy me-2" aria-hidden="true"></i>保存{$definition.singular}</button>
+    </div>
+</form>

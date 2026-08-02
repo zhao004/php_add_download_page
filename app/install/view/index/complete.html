@@ -1,0 +1,21 @@
+{extend name="layout/base" /}
+
+{block name="content"}
+<article class="install-card completion-card">
+    <div class="completion-mark" aria-hidden="true">✓</div>
+    <p class="eyebrow text-accent">READY</p>
+    <h2>安装完成</h2>
+    <p class="lead">数据结构、管理员账号、环境配置和安装锁均已生成。</p>
+
+    <div class="destination-list">
+        <a href="/admin">
+            <span><strong>管理后台</strong><small>/admin</small></span>
+            <b aria-hidden="true">→</b>
+        </a>
+        <a href="/">
+            <span><strong>下载页面</strong><small>/</small></span>
+            <b aria-hidden="true">→</b>
+        </a>
+    </div>
+</article>
+{/block}

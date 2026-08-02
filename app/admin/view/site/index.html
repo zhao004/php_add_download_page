@@ -1,0 +1,317 @@
+{extend name="layout/saas" /}
+
+{block name="content"}
+<section class="config-workspace site-config-workspace" data-config-tabs data-config-dirty-root>
+    <div class="surface-panel form-panel config-panel site-config-panel">
+        <form method="post" action="/admin/site" data-admin-dirty-form data-admin-ajax-form data-config-primary-form>
+            <input type="hidden" name="_token" value="{$csrfToken}">
+
+            <div class="config-tabs-shell" data-config-tabs-shell>
+                <ul class="nav config-tabs" role="tablist" aria-label="站点配置功能区">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="site-tab-brand-btn" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#site-tab-brand" aria-controls="site-tab-brand" aria-selected="true">
+                            <i class="bi bi-badge-ad" aria-hidden="true"></i>
+                            <span>品牌与版本</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="site-tab-hero-btn" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#site-tab-hero" aria-controls="site-tab-hero" aria-selected="false">
+                            <i class="bi bi-type" aria-hidden="true"></i>
+                            <span>首屏文案</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="site-tab-theme-btn" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#site-tab-theme" aria-controls="site-tab-theme" aria-selected="false">
+                            <i class="bi bi-palette2" aria-hidden="true"></i>
+                            <span>主题配色</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="site-tab-footer-btn" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#site-tab-footer" aria-controls="site-tab-footer" aria-selected="false">
+                            <i class="bi bi-layout-text-window-reverse" aria-hidden="true"></i>
+                            <span>页脚信息</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="site-tab-logs-btn" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#site-tab-logs" aria-controls="site-tab-logs" aria-selected="false">
+                            <i class="bi bi-shield-check" aria-hidden="true"></i>
+                            <span>日志策略</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content config-tab-content">
+                <div class="tab-pane fade show active" id="site-tab-brand" role="tabpanel" aria-labelledby="site-tab-brand-btn" tabindex="0">
+                    <div class="config-card-stack">
+                        <div class="config-card">
+                            <div class="config-card-head">
+                                <span class="config-card-icon" aria-hidden="true"><i class="bi bi-building"></i></span>
+                                <div class="config-card-copy">
+                                    <h3>基本信息</h3>
+                                    <p>软件名称会出现在顶栏、浏览器标题与后台侧栏。</p>
+                                </div>
+                            </div>
+                            <div class="row g-3 config-field-grid">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="site_name">软件名称</label>
+                                    <input class="form-control" id="site_name" name="site_name" value="{$values.site_name}" maxlength="64" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="site_slogan">站点副标题</label>
+                                    <input class="form-control" id="site_slogan" name="site_slogan" value="{$values.site_slogan}" maxlength="255" placeholder="一句话介绍产品">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="version">版本号</label>
+                                    <input class="form-control" id="version" name="version" value="{$values.version}" maxlength="32" placeholder="v1.0.0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="version_label">版本说明</label>
+                                    <input class="form-control" id="version_label" name="version_label" value="{$values.version_label}" maxlength="64" placeholder="最新稳定版">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-card">
+                            <div class="config-card-head">
+                                <span class="config-card-icon" aria-hidden="true"><i class="bi bi-image"></i></span>
+                                <div class="config-card-copy">
+                                    <h3>视觉资源</h3>
+                                    <p>支持上传或填写地址；图标用于落地页，网站图标用于浏览器标签。</p>
+                                </div>
+                            </div>
+                            <div class="row g-3 config-asset-grid">
+                                <div class="col-lg-6">
+                                    <div class="config-asset-tile">
+                                        <label class="form-label" for="app_icon">应用图标地址</label>
+                                        <div class="asset-field" data-image-upload data-target="app_icon" data-category="icons" data-token="{$csrfToken}" data-image-max-bytes="{$uploadLimits.image_max_bytes}" data-image-max-mb="{$uploadLimits.image_max_mb}" data-svg-max-bytes="{$uploadLimits.svg_max_bytes}" data-svg-max-mb="{$uploadLimits.svg_max_mb}">
+                                            <div class="input-group">
+                                                <input class="form-control font-monospace" id="app_icon" name="app_icon" value="{$values.app_icon}" maxlength="512" placeholder="/uploads/images/icons/202607/app.webp">
+                                                <input class="asset-file-input" type="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg,image/png,image/jpeg,image/gif,image/webp,image/svg+xml" tabindex="-1" aria-hidden="true" data-image-file>
+                                                <button class="btn btn-outline-dark" type="button" data-image-submit title="选择并上传图片">上传</button>
+                                            </div>
+                                            <div class="asset-preview-row">
+                                                <img class="asset-preview {if !$values.app_icon}d-none{/if}" src="{$values.app_icon|default=''}" alt="" data-image-preview>
+                                                <span class="asset-feedback" data-image-feedback aria-live="polite"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="config-asset-tile">
+                                        <label class="form-label" for="favicon">网站图标</label>
+                                        <div class="asset-field" data-image-upload data-target="favicon" data-category="favicons" data-token="{$csrfToken}" data-image-max-bytes="{$uploadLimits.image_max_bytes}" data-image-max-mb="{$uploadLimits.image_max_mb}" data-svg-max-bytes="{$uploadLimits.svg_max_bytes}" data-svg-max-mb="{$uploadLimits.svg_max_mb}">
+                                            <div class="input-group">
+                                                <input class="form-control font-monospace" id="favicon" name="favicon" value="{$values.favicon|default=''}" maxlength="512" placeholder="/uploads/images/favicons/202608/favicon.ico">
+                                                <input class="asset-file-input" type="file" accept=".ico,.png,.svg,image/x-icon,image/vnd.microsoft.icon,image/png,image/svg+xml" tabindex="-1" aria-hidden="true" data-image-file>
+                                                <button class="btn btn-outline-dark" type="button" data-image-submit title="选择并上传网站图标">上传</button>
+                                            </div>
+                                            <div class="asset-preview-row">
+                                                <img class="asset-preview {if !$values.favicon}d-none{/if}" src="{$values.favicon|default=''}" alt="" data-image-preview>
+                                                <span class="asset-feedback" data-image-feedback aria-live="polite"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-card config-card-compact">
+                            <div class="config-card-head">
+                                <span class="config-card-icon" aria-hidden="true"><i class="bi bi-people"></i></span>
+                                <div class="config-card-copy">
+                                    <h3>社会证明</h3>
+                                    <p>展示在首屏下载区下方，用于强化信任。</p>
+                                </div>
+                            </div>
+                            <div class="row g-3 config-field-grid">
+                                <div class="col-md-5 col-lg-4">
+                                    <label class="form-label" for="stats_users">用户数量文案</label>
+                                    <input class="form-control" id="stats_users" name="stats_users" value="{$values.stats_users}" maxlength="32" placeholder="860K+">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="site-tab-hero" role="tabpanel" aria-labelledby="site-tab-hero-btn" tabindex="0">
+                    <div class="config-card">
+                        <div class="config-card-head">
+                            <span class="config-card-icon" aria-hidden="true"><i class="bi bi-chat-quote"></i></span>
+                            <div class="config-card-copy">
+                                <h3>转化文案</h3>
+                                <p>主标题优先展示；按钮文案建议保持动作明确。</p>
+                            </div>
+                        </div>
+                        <div class="row g-3 config-field-grid">
+                            <div class="col-lg-8">
+                                <label class="form-label" for="hero_title">主标题</label>
+                                <input class="form-control" id="hero_title" name="hero_title" value="{$values.hero_title}" maxlength="255" required>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label" for="cta_text">按钮文案</label>
+                                <input class="form-control" id="cta_text" name="cta_text" value="{$values.cta_text}" maxlength="64" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="hero_desc">主描述</label>
+                                <textarea class="form-control config-textarea" id="hero_desc" name="hero_desc" rows="5" maxlength="2000" placeholder="用 1-3 句话说明产品价值与适用场景">{$values.hero_desc}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="site-tab-theme" role="tabpanel" aria-labelledby="site-tab-theme-btn" tabindex="0">
+                    <div class="theme-color-panel theme-color-layout" data-theme-color-picker>
+                        <input type="hidden" id="theme_color" name="theme_color" value="{$values.theme_color}" data-theme-color-value required>
+                        <div class="theme-color-main">
+                            <div class="config-card">
+                                <div class="config-card-head">
+                                    <span class="config-card-icon" aria-hidden="true"><i class="bi bi-grid-3x3-gap"></i></span>
+                                    <div class="config-card-copy">
+                                        <h3>预设色板</h3>
+                                        <p>点击即可切换，保存后全站生效。</p>
+                                    </div>
+                                </div>
+                                <div class="theme-preset-grid" role="listbox" aria-label="主题色预设">
+                                    {volist name="themePresets" id="preset"}
+                                    <button
+                                        class="theme-preset-swatch {if $preset.selected}is-selected{/if}"
+                                        type="button"
+                                        role="option"
+                                        data-theme-preset="{$preset.color}"
+                                        aria-selected="{if $preset.selected}true{else /}false{/if}"
+                                        title="{$preset.label}（{$preset.color}）"
+                                        style="--swatch-color: {$preset.color};"
+                                    >
+                                        <span class="theme-preset-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
+                                        <span class="theme-preset-label">{$preset.label}</span>
+                                    </button>
+                                    {/volist}
+                                </div>
+                            </div>
+                            <div class="config-card">
+                                <div class="config-card-head">
+                                    <span class="config-card-icon" aria-hidden="true"><i class="bi bi-eyedropper"></i></span>
+                                    <div class="config-card-copy">
+                                        <h3>自定义颜色</h3>
+                                        <p>支持 `#RGB` 或 `#RRGGBB`。</p>
+                                    </div>
+                                </div>
+                                <div class="theme-custom-row">
+                                    <label class="form-label" for="theme_color_picker">颜色值</label>
+                                    <div class="theme-custom-controls">
+                                        <input class="theme-color-input" type="color" id="theme_color_picker" value="{$values.theme_color}" data-theme-color-picker-input aria-label="选择自定义主题色">
+                                        <input class="form-control font-monospace theme-color-hex" type="text" id="theme_color_hex" value="{$values.theme_color}" maxlength="7" pattern="^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$" spellcheck="false" autocomplete="off" data-theme-color-hex aria-label="主题色十六进制值" placeholder="#4a9fd8">
+                                        <button class="btn btn-outline-dark" type="button" data-theme-color-reset>恢复默认</button>
+                                    </div>
+                                    <div class="form-text">保存后立即作用于前台与后台。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <aside class="theme-preview-card" data-theme-preview aria-live="polite">
+                            <div class="theme-preview-header">
+                                <span class="theme-preview-dot" data-theme-preview-accent></span>
+                                <strong>实时预览</strong>
+                                <span class="theme-preview-hex font-monospace" data-theme-preview-hex>{$values.theme_color}</span>
+                            </div>
+                            <div class="theme-preview-stage">
+                                <div class="theme-preview-mock" aria-hidden="true">
+                                    <span class="theme-preview-mock-bar"></span>
+                                    <span class="theme-preview-mock-line"></span>
+                                    <span class="theme-preview-mock-line is-short"></span>
+                                </div>
+                                <div class="theme-preview-body">
+                                    <button class="theme-preview-btn" type="button" tabindex="-1" data-theme-preview-btn>下载按钮</button>
+                                    <span class="theme-preview-chip" data-theme-preview-chip>选中标签</span>
+                                    <span class="theme-preview-soft" data-theme-preview-soft>浅色强调底</span>
+                                </div>
+                            </div>
+                            <p class="theme-preview-note">预览仅反映主色派生效果，不会直接提交。</p>
+                        </aside>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="site-tab-footer" role="tabpanel" aria-labelledby="site-tab-footer-btn" tabindex="0">
+                    <div class="config-card">
+                        <div class="config-card-head">
+                            <span class="config-card-icon" aria-hidden="true"><i class="bi bi-c-circle"></i></span>
+                            <div class="config-card-copy">
+                                <h3>版权与备案</h3>
+                                <p>展示在落地页最底部，建议保持简洁。</p>
+                            </div>
+                        </div>
+                        <div class="row g-3 config-field-grid">
+                            <div class="col-md-7">
+                                <label class="form-label" for="copyright">版权文案</label>
+                                <input class="form-control" id="copyright" name="copyright" value="{$values.copyright}" maxlength="255" placeholder="© 2026 示例科技">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label" for="icp_beian">备案号</label>
+                                <input class="form-control" id="icp_beian" name="icp_beian" value="{$values.icp_beian}" maxlength="128" placeholder="京 ICP 备 xxxxxxxx 号">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="site-tab-logs" role="tabpanel" aria-labelledby="site-tab-logs-btn" tabindex="0">
+                    <div class="config-card-stack">
+                        <div class="config-card">
+                            <div class="config-card-head">
+                                <span class="config-card-icon" aria-hidden="true"><i class="bi bi-hdd-network"></i></span>
+                                <div class="config-card-copy">
+                                    <h3>可信代理</h3>
+                                    <p>普通部署请留空；错误信任公网网段会导致客户端伪造访问 IP。</p>
+                                </div>
+                            </div>
+                            <div class="row g-3 config-field-grid">
+                                <div class="col-12">
+                                    <label class="form-label" for="trusted_proxy_ips">可信代理 IP / CIDR</label>
+                                    <textarea class="form-control font-monospace config-textarea" id="trusted_proxy_ips" name="trusted_proxy_ips" rows="4" placeholder="127.0.0.1&#10;10.0.0.0/8">{$values.trusted_proxy_ips}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="config-card">
+                            <div class="config-card-head">
+                                <span class="config-card-icon" aria-hidden="true"><i class="bi bi-funnel"></i></span>
+                                <div class="config-card-copy">
+                                    <h3>采集规则</h3>
+                                    <p>控制访问日志写入频率与机器人流量是否入库。</p>
+                                </div>
+                            </div>
+                            <div class="row g-3 config-field-grid config-rule-grid">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="log_dedupe_seconds">同 IP + 路径去重秒数</label>
+                                    <input class="form-control" type="number" id="log_dedupe_seconds" name="log_dedupe_seconds" value="{$values.log_dedupe_seconds}" min="0" max="3600" required>
+                                    <div class="form-text">设为 0 表示不去重。</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="config-switch-card">
+                                        <div class="form-check form-switch mb-0">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="record_bots" name="record_bots" value="1" {if $values.record_bots == 1}checked{/if}>
+                                            <label class="form-check-label" for="record_bots">记录机器人访问</label>
+                                        </div>
+                                        <p>开启后搜索引擎与爬虫请求也会写入访问日志。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions config-form-actions" data-config-form-actions>
+                <div class="config-form-actions-copy">
+                    <strong data-config-save-title>准备好了？</strong>
+                    <span data-config-save-hint>切换选项卡不会丢失已填写内容，保存后立即生效。</span>
+                    <span class="config-dirty-badge" data-config-dirty-badge hidden>
+                        <i class="bi bi-circle-fill" aria-hidden="true"></i>有未保存的更改
+                    </span>
+                </div>
+                <button class="btn btn-dark config-save-btn" type="submit" data-config-save-btn>
+                    <i class="bi bi-floppy me-2" aria-hidden="true"></i>保存站点配置
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{/block}

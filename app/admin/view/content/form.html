@@ -1,0 +1,11 @@
+{extend name="layout/saas" /}
+
+{block name="page_actions"}
+<a class="btn btn-light" href="/admin/content/{$resource}"><i class="bi bi-arrow-left me-2" aria-hidden="true"></i>返回列表</a>
+{/block}
+
+{block name="content"}
+<section class="surface-panel compact-form-panel">
+    {include file="content/form_body" /}
+</section>
+{/block}

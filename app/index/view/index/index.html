@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{$config.theme_color|default='#4a9fd8'}">
+    <meta name="description" content="{$config.page_description}">
+    <title>{$config.site_name}</title>
+    <link rel="icon" href="{$config.favicon_url|default='/favicon.ico'}" data-site-favicon>
+    <link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/vendor/photoswipe/photoswipe.css">
+    <link rel="stylesheet" href="/static/ui/tokens.css">
+    <link rel="stylesheet" href="/static/index/index.css">
+    {if !empty($themeStyle)}{$themeStyle|raw}{/if}
+</head>
+<body class="landing-body">
+<header class="utility-bar">
+    <a class="utility-brand" href="/" title="{$config.site_name}">
+        <span class="utility-brand-mark {if !$config.app_icon}is-fallback{/if}" aria-hidden="true">
+            {if $config.app_icon}
+            <img src="{$config.app_icon}" alt="">
+            {else}
+            <span class="utility-brand-initial">{$config.site_name_initial}</span>
+            {/if}
+        </span>
+        <span class="utility-brand-copy">
+            <span class="utility-brand-name">{$config.site_name}</span>
+            {if $config.site_slogan}
+            <span class="utility-brand-tagline">{$config.site_slogan}</span>
+            {/if}
+        </span>
+    </a>
+    {if !empty($navItems)}
+    <nav class="utility-nav" aria-label="站点导航">
+        {volist name="navItems" id="navItem"}
+        <a href="{$navItem.url}" target="{$navItem.target}" {if $navItem.target == '_blank'}rel="noopener noreferrer"{/if}>{$navItem.title}</a>
+        {/volist}
+    </nav>
+    {else}
+    <div class="utility-nav-spacer" aria-hidden="true"></div>
+    {/if}
+    <div class="utility-actions">
+        {// 首屏已有主下载按钮；顶栏 CTA 仅在滚过主按钮后出现，避免双按钮冗余}
+        <a class="utility-download" href="/download" data-sticky-download hidden>
+            <i class="bi bi-download" aria-hidden="true"></i>
+            <span>{$config.cta_text}</span>
+        </a>
+    </div>
+</header>
+
+<main>
+    <section class="hero-split {if empty($previewPages)}hero-no-preview{/if}" data-hero>
+        <div class="hero-copy">
+            <div class="app-icon reveal-item" style="--reveal-delay: 0ms">
+                {if $config.app_icon}
+                <img src="{$config.app_icon}" alt="">
+                {else}
+                <i class="bi bi-stars" aria-hidden="true"></i>
+                {/if}
+            </div>
+            <h1 class="reveal-item" style="--reveal-delay: 60ms">{$config.display_title}</h1>
+            {if $config.hero_desc}
+            <p class="hero-description reveal-item" style="--reveal-delay: 100ms">{$config.hero_desc}</p>
+            {/if}
+            <div class="hero-actions reveal-item" style="--reveal-delay: 140ms">
+                <a class="download-button" href="/download" data-primary-download>
+                    <i class="bi bi-download" aria-hidden="true"></i>
+                    <span>{$config.cta_text}</span>
+                </a>
+                {if $config.version || $config.version_label || $config.stats_users}
+                <div class="hero-meta" aria-label="版本与数据">
+                    {if $config.version || $config.version_label}
+                    <span class="hero-meta-item">
+                        {if $config.version}<span class="hero-meta-value">{$config.version}</span>{/if}
+                        {if $config.version && $config.version_label}<span class="hero-meta-sep" aria-hidden="true">·</span>{/if}
+                        {if $config.version_label}<span class="hero-meta-label">{$config.version_label}</span>{/if}
+                    </span>
+                    {/if}
+                    {if ($config.version || $config.version_label) && $config.stats_users}
+                    <span class="hero-meta-divider" aria-hidden="true"></span>
+                    {/if}
+                    {if $config.stats_users}
+                    <span class="hero-meta-item hero-meta-stat">
+                        <i class="bi bi-people-fill" aria-hidden="true"></i>
+                        <span class="hero-meta-value">{$config.stats_users}</span>
+                        <span class="hero-meta-label">用户</span>
+                    </span>
+                    {/if}
+                </div>
+                {/if}
+            </div>
+        </div>
+
+        {if !empty($previewPages)}
+        <div class="hero-preview reveal-item" style="--reveal-delay: 120ms" data-carousel data-autoplay-interval="4500">
+            <div class="preview-store-head">
+                <p class="preview-label">产品预览</p>
+                <p class="preview-store-caption" data-preview-title>{$firstPreviewTitle}</p>
+            </div>
+
+            {// 平台中性：横向截图画廊，不绑定手机/特定系统形态}
+            <div class="preview-store" data-preview-store>
+                <button class="preview-store-nav preview-store-nav--prev" type="button" data-preview-prev aria-label="上一张预览" hidden>
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button class="preview-store-nav preview-store-nav--next" type="button" data-preview-next aria-label="下一张预览" hidden>
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
+
+                <div
+                    class="preview-store-scroller"
+                    data-preview-scroller
+                    tabindex="0"
+                    role="region"
+                    aria-roledescription="轮播"
+                    aria-label="产品预览截图，可左右滑动，点击可放大"
+                >
+                    <div class="preview-store-track" data-preview-track>
+                        {volist name="previewPages" id="preview"}
+                        <figure
+                            class="preview-shot {if $preview._index == 0}is-active{/if}"
+                            data-slide-index="{$preview._index}"
+                            data-title="{$preview.title}"
+                        >
+                            <div class="preview-shot-frame">
+                                <img
+                                    class="preview-slide"
+                                    src="{$preview.image}"
+                                    alt="{$preview.title}"
+                                    data-lightbox-src="{$preview.image}"
+                                    data-lightbox-title="{$preview.title}"
+                                    draggable="false"
+                                    loading="{if $preview._index == 0}eager{else /}lazy{/if}"
+                                >
+                            </div>
+                        </figure>
+                        {/volist}
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-dots" aria-label="选择预览画面" data-preview-dots>
+                {volist name="previewPages" id="preview"}
+                <button
+                    class="preview-dot {if $preview._index == 0}is-active{/if}"
+                    type="button"
+                    data-slide="{$preview._index}"
+                    data-title="{$preview.title}"
+                    aria-label="查看{$preview.title}"
+                    {if $preview._index == 0}aria-current="true"{/if}
+                >
+                    <span class="preview-dot-progress" aria-hidden="true"></span>
+                </button>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+    </section>
+
+    {if !empty($featureItems)}
+    <section class="feature-zone" id="features" aria-labelledby="features-heading">
+        <div class="feature-zone-head">
+            <p class="section-eyebrow"><span>核心能力</span></p>
+            <h2 id="features-heading">为你打造的核心能力</h2>
+            <p class="feature-zone-lead">了解产品能力，快速判断是否适合你的场景</p>
+        </div>
+        <div class="feature-grid">
+            {volist name="featureItems" id="feature"}
+            {if $feature.link_url}<a class="feature-card" href="{$feature.link_url}">{else}<article class="feature-card">{/if}
+                {if $feature._icon_is_image}
+                <img class="feature-icon-image" src="{$feature.icon}" alt="" loading="lazy" decoding="async">
+                {else}
+                <span class="feature-icon-wrap" aria-hidden="true"><i class="{$feature.icon|default='bi bi-grid'}"></i></span>
+                {/if}
+                <div class="feature-card-body">
+                    <h3>{$feature.title}</h3>
+                    {if $feature.description}<p>{$feature.description}</p>{/if}
+                </div>
+            {if $feature.link_url}</a>{else}</article>{/if}
+            {/volist}
+        </div>
+    </section>
+    {/if}
+</main>
+
+{// 底部信息区：信任品牌 → 友情链接 → 版权备案}
+{if !empty($trustBrands)}
+<section class="trust-strip site-bottom-block" aria-label="信任品牌">
+    <div class="site-bottom-panel">
+        <p class="site-bottom-eyebrow"><span>合作伙伴</span></p>
+        <div class="trust-list">
+            {volist name="trustBrands" id="brand"}
+            {if $brand.url}
+            <a class="trust-item" href="{$brand.url}" target="_blank" rel="noopener noreferrer" title="{$brand.name}">
+            {else}
+            <span class="trust-item" title="{$brand.name}">
+            {/if}
+                {if $brand.logo}
+                <img src="{$brand.logo}" alt="{$brand.name}">
+                {else}
+                <b>{$brand.name}</b>
+                {/if}
+            {if $brand.url}</a>{else}</span>{/if}
+            {/volist}
+        </div>
+    </div>
+</section>
+{/if}
+
+{if $showFooter}
+<footer class="landing-footer site-bottom-block" id="footer">
+    <div class="site-bottom-panel">
+        {if !empty($friendLinks)}
+        <div class="friend-links">
+            <p class="site-bottom-eyebrow"><span>友情链接</span></p>
+            <nav aria-label="友情链接">
+                {volist name="friendLinks" id="friend"}
+                <a href="{$friend.url}" target="_blank" rel="noopener noreferrer">{$friend.name}</a>
+                {/volist}
+            </nav>
+        </div>
+        {/if}
+        {if (!empty($friendLinks)) && ($config.copyright || $config.icp_beian)}
+        <div class="footer-divider" aria-hidden="true"></div>
+        {/if}
+        {if $config.copyright || $config.icp_beian}
+        <div class="footer-meta">
+            {if $config.copyright}<span class="footer-copy">{$config.copyright}</span>{/if}
+            {if $config.copyright && $config.icp_beian}<span class="footer-meta-dot" aria-hidden="true"></span>{/if}
+            {if $config.icp_beian}<span class="footer-beian">{$config.icp_beian}</span>{/if}
+        </div>
+        {/if}
+    </div>
+</footer>
+{/if}
+
+<script src="/static/index/index.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{$pageTitle} · {$siteName|default='NOVA'}</title>
+    <link rel="icon" href="{$faviconUrl|default='/favicon.ico'}" data-site-favicon>
+    <link rel="stylesheet" href="/static/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/ui/tokens.css">
+    <link rel="stylesheet" href="/static/admin/admin.css">
+    {if !empty($themeStyle)}{$themeStyle|raw}{/if}
+</head>
+<body class="login-body">
+<div class="login-ambient" aria-hidden="true">
+    <span class="login-ambient-orb login-ambient-orb--one"></span>
+    <span class="login-ambient-orb login-ambient-orb--two"></span>
+    <span class="login-ambient-grid"></span>
+</div>
+
+<main class="login-shell">
+    <section class="login-workspace">
+        <div class="login-card">
+            <div class="login-card-header">
+                <div class="login-card-heading">
+                    <h1 class="login-card-title">登录管理后台</h1>
+                </div>
+            </div>
+
+            <form id="login-form" class="login-form" method="post" action="/admin/login" data-login-form novalidate>
+                <input type="hidden" name="_token" value="{$csrfToken}" data-login-csrf>
+                <input type="hidden" name="redirect" value="{$redirect}">
+                <div class="mb-3">
+                    <label class="form-label" for="username">用户名</label>
+                    <div class="input-group login-input-group">
+                        <span class="input-group-text"><i class="bi bi-person" aria-hidden="true"></i></span>
+                        <input class="form-control" id="username" name="username" value="{$username}" maxlength="64"
+                               required autocomplete="username" autofocus placeholder="请输入用户名">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="password">密码</label>
+                    <div class="input-group login-input-group">
+                        <span class="input-group-text"><i class="bi bi-key" aria-hidden="true"></i></span>
+                        <input class="form-control" type="password" id="password" name="password" maxlength="72"
+                               required autocomplete="current-password" placeholder="请输入密码">
+                        <button class="btn btn-outline-secondary login-password-toggle" type="button"
+                                data-password-toggle aria-label="显示密码" aria-pressed="false" title="显示密码">
+                            <i class="bi bi-eye" aria-hidden="true" data-password-toggle-icon></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="captcha">验证码</label>
+                    <div class="login-captcha-row">
+                        <input
+                                class="form-control"
+                                id="captcha"
+                                name="captcha"
+                                type="text"
+                                maxlength="4"
+                                minlength="4"
+                                required
+                                autocomplete="off"
+                                autocapitalize="off"
+                                autocorrect="off"
+                                spellcheck="false"
+                                inputmode="text"
+                                pattern="[A-Za-z0-9]{4}"
+                                title="请输入 4 位英文大小写字母或数字，不区分大小写"
+                                placeholder="4 位验证码"
+                                data-captcha-input
+                        >
+                        <img class="login-captcha-image" src="{$captchaUrl}" alt="登录验证码，点击可换一张"
+                             title="点击换一张验证码" role="button" tabindex="0" data-captcha-image>
+                    </div>
+                </div>
+                <label class="login-remember mb-4" for="remember">
+                    <input type="checkbox" id="remember" name="remember" value="1" autocomplete="off"
+                           data-remember-login>
+                    <span>记住用户名和密码</span>
+                </label>
+                <button class="btn btn-dark w-100 login-submit" type="submit" data-login-submit>
+                    <span class="login-submit-label" data-login-submit-label>登录</span>
+                    <span class="login-submit-spinner" data-login-submit-spinner hidden aria-hidden="true">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span>登录中…</span>
+                    </span>
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<div
+        id="adminToastContainer"
+        class="toast-container position-fixed top-0 end-0 p-3"
+        data-toast-max="3"
+        aria-live="polite"
+        aria-relevant="additions"
+>
+    {volist name="flashes" id="flashItem"}
+    <div
+            class="toast admin-toast admin-toast--{$flashItem.type}"
+            role="status"
+            aria-atomic="true"
+            data-toast-type="{$flashItem.type}"
+            data-bs-delay="4200"
+            data-bs-autohide="true"
+    >
+        <div class="admin-toast-inner">
+            <span class="admin-toast-icon" aria-hidden="true">
+                {if $flashItem.type == 'success'}<i class="bi bi-check-circle-fill"></i>
+                {elseif $flashItem.type == 'danger'}<i class="bi bi-x-circle-fill"></i>
+                {elseif $flashItem.type == 'warning'}<i class="bi bi-exclamation-triangle-fill"></i>
+                {else /}<i class="bi bi-info-circle-fill"></i>
+                {/if}
+            </span>
+            <div class="toast-body">{$flashItem.message}</div>
+            <button type="button" class="admin-toast-close" data-bs-dismiss="toast" aria-label="关闭">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="admin-toast-progress" aria-hidden="true"></div>
+    </div>
+    {/volist}
+</div>
+
+<script src="/static/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="/static/admin/login.js" defer></script>
+</body>
+</html>

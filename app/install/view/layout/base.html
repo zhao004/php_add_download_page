@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{$pageTitle} · NOVA 安装向导</title>
+    <link rel="icon" href="/favicon.ico" data-site-favicon>
+    <link rel="stylesheet" href="/static/ui/tokens.css">
+    <link rel="stylesheet" href="/static/install/install.css">
+</head>
+<body>
+<div class="install-shell">
+    <section class="workspace">
+        <header class="workspace-header">
+            {if $currentStep > 0}
+            <p class="step-counter">步骤 {$currentStep} / 5</p>
+            {/if}
+        </header>
+        {if $currentStep > 0}
+        <ol class="steps" aria-label="安装进度">
+            <li class="step {if $currentStep == 1}is-active{/if} {if $currentStep > 1}is-done{/if}">
+                <span>1</span><em>欢迎</em></li>
+            <li class="step {if $currentStep == 2}is-active{/if} {if $currentStep > 2}is-done{/if}">
+                <span>2</span><em>环境</em></li>
+            <li class="step {if $currentStep == 3}is-active{/if} {if $currentStep > 3}is-done{/if}"><span>3</span><em>数据库</em>
+            </li>
+            <li class="step {if $currentStep == 4}is-active{/if} {if $currentStep > 4}is-done{/if}"><span>4</span><em>管理员</em>
+            </li>
+            <li class="step {if $currentStep == 5}is-active{/if}"><span>5</span><em>完成</em></li>
+        </ol>
+        {/if}
+
+        <main class="content">
+            {block name="content"}{/block}
+        </main>
+    </section>
+</div>
+<script src="/static/install/install.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+{extend name="layout/base" /}
+
+{block name="content"}
+<article class="install-card">
+    <p class="eyebrow text-accent">DATABASE</p>
+    <h2>连接 MySQL</h2>
+    <p class="lead">安装器只在目标库没有 NOVA 同名表时继续，避免覆盖现有数据。</p>
+
+    {if $error}
+    <div class="alert alert-danger" role="alert">{$error}</div>
+    {/if}
+
+    <form method="post" action="/install/database" data-database-form data-test-url="/install/database/test">
+        <input type="hidden" name="_token" value="{$csrfToken}">
+
+        <div class="field-grid field-grid-host">
+            <label class="field">
+                <span>数据库主机</span>
+                <input type="text" name="hostname" value="{$values.hostname}" maxlength="255" required autocomplete="off">
+            </label>
+            <label class="field field-port">
+                <span>端口</span>
+                <input type="number" name="hostport" value="{$values.hostport}" min="1" max="65535" required inputmode="numeric">
+            </label>
+        </div>
+
+        <label class="field">
+            <span>数据库名</span>
+            <input type="text" name="database" value="{$values.database}" maxlength="64" pattern="[A-Za-z0-9_]+" required autocomplete="off">
+        </label>
+
+        <div class="field-grid">
+            <label class="field">
+                <span>数据库用户</span>
+                <input type="text" name="username" value="{$values.username}" maxlength="64" required autocomplete="username">
+            </label>
+            <label class="field">
+                <span>数据库密码</span>
+                <input type="password" name="password" value="" maxlength="255" autocomplete="current-password">
+            </label>
+        </div>
+
+        <div class="field-grid">
+            <label class="field">
+                <span>字符集</span>
+                <select name="charset">
+                    <option value="utf8mb4" {if $values.charset == 'utf8mb4'}selected{/if}>utf8mb4</option>
+                    <option value="utf8" {if $values.charset == 'utf8'}selected{/if}>utf8</option>
+                </select>
+            </label>
+            <label class="field">
+                <span>数据表前缀</span>
+                <input type="text" name="prefix" value="{$values.prefix}" maxlength="32" pattern="[A-Za-z0-9_]*" autocomplete="off">
+            </label>
+        </div>
+
+        <label class="checkbox-row">
+            <input type="checkbox" name="create_database" value="1" {if $values.create_database}checked{/if}>
+            <span>目标数据库不存在时尝试自动创建</span>
+        </label>
+
+        <div class="connection-result" data-connection-result aria-live="polite"></div>
+
+        <div class="actions">
+            <a class="button button-secondary" href="/install/environment">返回</a>
+            <div class="actions-inline">
+                <button class="button button-secondary" type="button" data-test-connection>测试连接</button>
+                <button class="button button-primary" type="submit">保存并继续</button>
+            </div>
+        </div>
+    </form>
+</article>
+{/block}

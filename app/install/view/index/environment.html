@@ -1,0 +1,53 @@
+{extend name="layout/base" /}
+
+{block name="content"}
+<article class="install-card install-card-wide">
+    <p class="eyebrow text-accent">ENVIRONMENT</p>
+    <h2>环境检测</h2>
+    <p class="lead">阻断项必须全部通过。ip2region 数据文件缺失只会让归属地显示为“未知”，不会阻止安装。</p>
+
+    <div class="table-wrap">
+        <table class="check-table">
+            <thead>
+            <tr>
+                <th scope="col">检测项</th>
+                <th scope="col">要求</th>
+                <th scope="col">当前值</th>
+                <th scope="col">结果</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name="checks" id="check"}
+            <tr>
+                <td data-label="检测项">{$check.name}</td>
+                <td data-label="要求">{$check.required}</td>
+                <td data-label="当前值" class="mono path-value">{$check.current}</td>
+                <td data-label="结果">
+                    {if $check.passed}
+                    <span class="status status-success">通过</span>
+                    {elseif $check.blocking}
+                    <span class="status status-danger">阻断</span>
+                    {else}
+                    <span class="status status-warning">警告</span>
+                    {/if}
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+
+    {if !$canInstall}
+    <div class="alert alert-danger" role="alert">存在未通过的阻断项。修复服务器环境后刷新本页。</div>
+    {/if}
+
+    <div class="actions">
+        <a class="button button-secondary" href="/install">返回</a>
+        {if $canInstall}
+        <a class="button button-primary" href="/install/database">配置数据库</a>
+        {else}
+        <a class="button button-primary" href="/install/environment">重新检测</a>
+        {/if}
+    </div>
+</article>
+{/block}

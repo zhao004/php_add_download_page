@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="{$themeColor|default='#4a9fd8'}">
+    <title>网盘下载 · {$siteName|default='NOVA'}</title>
+    <link rel="icon" href="{$faviconUrl|default='/favicon.ico'}" data-site-favicon>
+    <link rel="stylesheet" href="/static/ui/tokens.css">
+    <link rel="stylesheet" href="/static/index/download-other.css">
+    {if !empty($themeStyle)}{$themeStyle|raw}{/if}
+    <script src="/static/index/download-other.js" defer></script>
+</head>
+<body class="download-other-body">
+<main class="download-other-main">
+    <section class="download-other-panel" aria-labelledby="download-other-title" data-download-other>
+        <header class="download-other-brand">
+            <a class="download-other-brand-link" href="/" aria-label="返回首页">
+                <span class="download-other-brand-mark {if !$appIcon}is-fallback{/if}" aria-hidden="true">
+                    {if $appIcon}
+                    <img src="{$appIcon}" alt="">
+                    {else}
+                    <span>{$siteNameInitial|default='N'}</span>
+                    {/if}
+                </span>
+                <span class="download-other-brand-name">{$siteName|default='NOVA'}</span>
+            </a>
+        </header>
+
+        <div class="download-other-content">
+            <h1 id="download-other-title">网盘下载</h1>
+            {if $hasSharePassword}
+            <p class="download-other-hint">复制访问密码，打开网盘后粘贴使用。</p>
+            <div class="download-other-password" aria-labelledby="download-other-password-label">
+                <span class="download-other-password-label" id="download-other-password-label">访问密码</span>
+                <div class="download-other-password-value">
+                    <code id="download-other-password-value">{$sharePassword}</code>
+                    <button class="download-other-copy-button" type="button" data-copy-share-password
+                            aria-label="复制访问密码" title="复制访问密码">
+                        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" focusable="false">
+                            <rect x="7" y="7" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M13 7V5.6A1.6 1.6 0 0 0 11.4 4H5.6A1.6 1.6 0 0 0 4 5.6v5.8A1.6 1.6 0 0 0 5.6 13H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                        <span class="download-other-copy-text">复制</span>
+                    </button>
+                </div>
+                <span class="download-other-copy-status" data-copy-share-password-status aria-live="polite"></span>
+            </div>
+            {else}
+            <p class="download-other-hint">此分享无需访问密码，可直接打开网盘。</p>
+            {/if}
+        </div>
+
+        <div class="download-other-actions">
+            <a class="download-other-open-link" href="{$shareUrl}" target="_blank" rel="noopener noreferrer"
+               referrerpolicy="no-referrer">
+                打开网盘
+            </a>
+            <a class="download-other-home-link" href="/">返回首页</a>
+        </div>
+
+        {if $versionMeta}
+        <footer class="download-other-meta">{$versionMeta}</footer>
+        {/if}
+    </section>
+</main>
+</body>
+</html>

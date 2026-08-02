@@ -1,0 +1,101 @@
+{extend name="layout/saas" /}
+
+{block name="content"}
+<section class="config-workspace" data-config-dirty-root data-download-config>
+    <div class="surface-panel form-panel config-panel">
+        <form id="downloadConfigForm" method="post" action="/admin/download" data-admin-dirty-form data-admin-ajax-form data-config-primary-form class="config-primary-form">
+            <input type="hidden" name="_token" value="{$csrfToken}">
+        </form>
+
+        <div class="config-card-stack">
+            {// 来源选择}
+            <div class="config-card download-source-card">
+                <label class="form-label" for="download_mode">下载方式</label>
+                <select class="form-select" id="download_mode" name="download_mode" form="downloadConfigForm" data-download-mode-select required>
+                    <option value="local" {if $values.download_mode == 'local'}selected{/if}>本地 APK（直链）</option>
+                    <option value="other" {if $values.download_mode == 'other'}selected{/if}>网盘下载（直接跳转）</option>
+                </select>
+                <p class="download-mode-hint form-text mb-0" data-download-mode-hint>
+                    {if $values.download_mode == 'other'}
+                    展示访问密码后直接打开原分享链接，不解析第三方网盘。
+                    {else}
+                    由本站直接提供文件，适合自有带宽与完整控制。
+                    {/if}
+                </p>
+            </div>
+
+            {// 本地 APK}
+            <div class="config-card-stack" id="download-panel-local" data-download-panel="local" {if $values.download_mode != 'local'}hidden{/if}>
+                <div class="config-card apk-package-card {if $values.local_apk_path}is-ready{else}is-empty{/if}">
+                    <div class="apk-package-head">
+                        <div class="apk-status-icon" aria-hidden="true">
+                            <i class="bi bi-file-earmark-zip"></i>
+                        </div>
+                        <div class="apk-status-meta ms-auto">
+                            {if $values.local_apk_path}
+                            <span class="apk-status-pill is-ready"><i class="bi bi-check-circle" aria-hidden="true"></i>已就绪</span>
+                            {else}
+                            <span class="apk-status-pill is-empty"><i class="bi bi-exclamation-circle" aria-hidden="true"></i>尚未上传</span>
+                            {/if}
+                        </div>
+                    </div>
+
+                    <div class="apk-package-body">
+                        <div class="apk-status-card {if $values.local_apk_path}is-ready{else}is-empty{/if}">
+                            <div class="apk-status-body">
+                                <label class="form-label" for="local_apk_path">当前文件</label>
+                                <input class="form-control font-monospace" id="local_apk_path" value="{$values.local_apk_path|default='尚未上传'}" readonly>
+                            </div>
+                        </div>
+
+                        <form class="apk-upload-form" method="post" action="/admin/download/upload" enctype="multipart/form-data" data-apk-upload data-admin-dirty-form data-admin-ajax-form data-admin-ajax-reload data-max-bytes="{$uploadLimits.apk_max_bytes}" data-max-mb="{$uploadLimits.apk_max_mb}">
+                            <input type="hidden" name="_token" value="{$csrfToken}">
+                            <label class="form-label" for="apk_file_input">替换安装包（≤{$uploadLimits.apk_max_mb}MB）</label>
+                            <div class="upload-row">
+                                <input class="form-control" id="apk_file_input" type="file" name="apk" accept=".apk,application/vnd.android.package-archive" data-apk-file required>
+                                <button class="btn btn-outline-dark" type="submit" data-apk-submit>
+                                    <i class="bi bi-upload me-2" aria-hidden="true"></i>上传
+                                </button>
+                            </div>
+                            <div class="asset-feedback mt-2" data-apk-feedback aria-live="polite"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {// 网盘下载}
+            <div class="config-card" id="download-panel-other" data-download-panel="other" {if $values.download_mode != 'other'}hidden{/if}>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="other_url">分享地址</label>
+                        <input class="form-control font-monospace" type="url" id="other_url" name="other_url" form="downloadConfigForm" value="{$values.other_url}" maxlength="2048" placeholder="https://pan.example.com/s/...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="other_pwd">访问密码</label>
+                        <input class="form-control font-monospace" type="text" id="other_pwd" name="other_pwd" form="downloadConfigForm" value="{$values.other_pwd|default=''}" maxlength="128" autocomplete="off" placeholder="无密码可留空" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions config-form-actions" data-config-form-actions data-config-actions-for="downloadConfigForm">
+            <div class="config-form-actions-copy">
+                <span class="config-dirty-badge" data-config-dirty-badge hidden>
+                    <i class="bi bi-circle-fill" aria-hidden="true"></i>有未保存的更改
+                </span>
+                {// 保留节点供脏检查脚本更新文案，默认不展示冗长说明}
+                <strong data-config-save-title class="visually-hidden">下载配置</strong>
+                <span data-config-save-hint class="visually-hidden">保存分发方式与网盘参数</span>
+            </div>
+            <div class="config-form-actions-btns">
+                <a class="btn btn-light" href="/download" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-box-arrow-up-right me-2" aria-hidden="true"></i>测试下载
+                </a>
+                <button class="btn btn-dark config-save-btn" type="submit" form="downloadConfigForm" data-config-save-btn>
+                    <i class="bi bi-floppy me-2" aria-hidden="true"></i>保存
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{/block}
