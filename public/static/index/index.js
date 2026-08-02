@@ -280,6 +280,14 @@
         let pointerStartScrollLeft = 0;
         /** @type {number|null} */
         let activePointerId = null;
+        /**
+         * 按下时命中的截图节点。
+         * 说明：setPointerCapture 后 pointerup 的 event.target 会变成 scroller，
+         * 必须在 pointerdown 时缓存真实截图，否则桌面点击无法打开灯箱。
+         *
+         * @type {HTMLElement|null}
+         */
+        let pointerTargetShot = null;
         /** 抑制 pointer 流程后紧随的 click，避免桌面双开灯箱。 */
         let suppressClickUntil = 0;
         /** 触控按下时的滚动位置，用于判断是否发生了滑动。 */
@@ -890,6 +898,36 @@
             });
 
             /**
+             * 从事件或坐标解析命中的截图卡片。
+             *
+             * @param {Event} event 指针/点击事件
+             * @param {number} [clientX] 可选客户端 X
+             * @param {number} [clientY] 可选客户端 Y
+             * @returns {HTMLElement|null}
+             */
+            const resolveShotFromEvent = (event, clientX, clientY) => {
+                if (event.target instanceof Element) {
+                    const fromTarget = event.target.closest('.preview-shot');
+                    if (fromTarget instanceof HTMLElement) {
+                        return fromTarget;
+                    }
+                }
+
+                // pointer capture 后 target 可能是 scroller，改用坐标命中。
+                if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+                    const hit = document.elementFromPoint(clientX, clientY);
+                    if (hit instanceof Element) {
+                        const fromPoint = hit.closest('.preview-shot');
+                        if (fromPoint instanceof HTMLElement && scroller.contains(fromPoint)) {
+                            return fromPoint;
+                        }
+                    }
+                }
+
+                return null;
+            };
+
+            /**
              * 处理截图卡片激活或打开灯箱（克隆映射到对应真实索引）。
              *
              * @param {HTMLElement} targetShot 目标截图卡片
@@ -900,8 +938,8 @@
                 if (index === null) {
                     return;
                 }
-                if (index !== activeIndex || targetShot.dataset.previewClone) {
-                    // 点在克隆上时先回到真实节点，再由用户再次点击打开灯箱。
+                // 点到非当前项或克隆：先切到对应真实图；当前项：打开 PhotoSwipe。
+                if (index !== activeIndex || Boolean(targetShot.dataset.previewClone)) {
                     showFromUser(index);
                     return;
                 }
@@ -910,6 +948,9 @@
 
             // 桌面端支持按住拖拽横向滚动；移动端保留原生惯性滑动。
             scroller.addEventListener('pointerdown', (event) => {
+                const hitShot = resolveShotFromEvent(event, event.clientX, event.clientY);
+                pointerTargetShot = hitShot;
+
                 if (event.pointerType === 'touch') {
                     touchStartX = event.clientX;
                     touchStartScrollLeft = scroller.scrollLeft;
@@ -958,11 +999,12 @@
                 if (event.pointerType === 'touch') {
                     const scrolled = Math.abs(scroller.scrollLeft - touchStartScrollLeft) > CLICK_MOVE_THRESHOLD_PX;
                     const moved = Math.abs(event.clientX - touchStartX) > CLICK_MOVE_THRESHOLD_PX;
-                    const targetShot = event.target instanceof Element
-                        ? event.target.closest('.preview-shot')
-                        : null;
+                    const targetShot = pointerTargetShot
+                        || resolveShotFromEvent(event, event.clientX, event.clientY);
+                    pointerTargetShot = null;
 
                     if (!scrolled && !moved && targetShot instanceof HTMLElement) {
+                        // 仅在已处理激活时抑制后续 click，避免吞掉未处理的点击。
                         suppressClickUntil = Date.now() + 400;
                         activateOrOpenPhone(targetShot);
                         return;
@@ -978,15 +1020,16 @@
                 }
 
                 const wasClick = !pointerMoved;
-                const targetShot = event.target instanceof Element
-                    ? event.target.closest('.preview-shot')
-                    : null;
+                // 优先使用 pointerdown 缓存的截图；capture 后 event.target 往往是 scroller。
+                const targetShot = pointerTargetShot
+                    || resolveShotFromEvent(event, event.clientX, event.clientY);
 
                 pointerTracking = false;
                 activePointerId = null;
-                suppressClickUntil = Date.now() + 400;
+                pointerTargetShot = null;
 
                 if (wasClick && targetShot instanceof HTMLElement) {
+                    suppressClickUntil = Date.now() + 400;
                     activateOrOpenPhone(targetShot);
                     return;
                 }
@@ -1000,23 +1043,24 @@
             scroller.addEventListener('pointercancel', () => {
                 pointerTracking = false;
                 activePointerId = null;
+                pointerTargetShot = null;
                 if (!lightboxOpen) {
                     setAutoplayPaused(false);
                 }
             });
 
-            // 兜底 click：部分环境 pointer 事件不完整时仍可打开。
+            // 兜底 click：pointer 流程未处理（如未触发 capture）时仍可打开。
             scroller.addEventListener('click', (event) => {
                 if (Date.now() < suppressClickUntil) {
                     event.preventDefault();
+                    event.stopPropagation();
                     return;
                 }
-                const targetShot = event.target instanceof Element
-                    ? event.target.closest('.preview-shot')
-                    : null;
+                const targetShot = resolveShotFromEvent(event, event.clientX, event.clientY);
                 if (!(targetShot instanceof HTMLElement)) {
                     return;
                 }
+                event.preventDefault();
                 activateOrOpenPhone(targetShot);
             });
         }
