@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "php-pro": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/php-pro/SKILL.md",
+      "computedHash": "1cd5289325d0924d6fca4f950711bc9b63d873338cf3b4acd00db62603aebeda"
+    },
+    "thinkphp": {
+      "source": "youlaitech/youlai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/thinkphp/SKILL.md",
+      "computedHash": "2b5f38af4fc4bac836069c8001223a61a9e90fa36df9297d27305ef556a96589"
+    }
+  }
+}
