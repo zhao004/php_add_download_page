@@ -603,6 +603,34 @@ SVG;
                 && strpos($downloadOtherScript, "document.execCommand('copy')") !== false,
             '网盘下载中转页应提供响应式样式与剪贴板降级方案'
         );
+        $this->isTrue(
+            strpos($downloadOtherTemplate, 'download-other-stage') !== false
+                && strpos($downloadOtherTemplate, 'download-other-card') !== false
+                && strpos($downloadOtherTemplate, 'data-copy-success-toast') !== false
+                && strpos($downloadOtherTemplate, 'data-copy-state') !== false
+                && strpos($downloadOtherTemplate, '<svg') === false
+                && strpos($downloadOtherTemplate, 'data-no-password') !== false,
+            '网盘下载页应使用分层交付卡片、独立 Toast 和无密码状态，图标不得内联 SVG'
+        );
+        $this->isTrue(
+            strpos($downloadOtherStyles, '.download-other-stage') !== false
+                && strpos($downloadOtherStyles, '.download-other-card') !== false
+                && strpos($downloadOtherStyles, 'min-width: 1081px') !== false
+                && strpos($downloadOtherStyles, 'width: 800px') !== false
+                && strpos($downloadOtherStyles, 'width: 640px') !== false
+                && strpos($downloadOtherStyles, 'width: 343px') !== false
+                && strpos($downloadOtherStyles, 'margin: 37px auto 0') !== false
+                && strpos($downloadOtherStyles, '.download-other-toast') !== false
+                && strpos($downloadOtherStyles, '--nova-accent-rgb') !== false,
+            '网盘下载页应覆盖三端断点、居中卡片内容并使用主题令牌'
+        );
+        $this->isTrue(
+            strpos($downloadOtherScript, 'data-copy-success-toast') !== false
+                && strpos($downloadOtherScript, 'clearTimeout') !== false
+                && strpos($downloadOtherScript, '2000') !== false
+                && strpos($downloadOtherScript, 'copyState') !== false,
+            '网盘复制反馈应显示可访问 Toast，并安全重置重复点击状态'
+        );
         $installSql = $this->readFixture($rootPath . 'database/install.sql');
         $siteConfigService = $this->readFixture($rootPath . 'app/common/service/SiteConfigService.php');
         $this->isTrue(
@@ -1009,6 +1037,16 @@ SVG;
             'app/index/view/index/download_other.html',
             'public/static/index/download-other.css',
             'public/static/index/download-other.js',
+            'public/static/index/assets/netdisk/icon_copy_default.svg',
+            'public/static/index/assets/netdisk/icon_copy_success.svg',
+            'public/static/index/assets/netdisk/icon_download.svg',
+            'public/static/index/assets/netdisk/icon_chevron_left.svg',
+            'public/static/index/assets/netdisk/icon_status_dot.svg',
+            'public/static/index/assets/netdisk/ambient_blue_top_left.svg',
+            'public/static/index/assets/netdisk/ambient_violet_bottom_right.svg',
+            'public/static/index/assets/netdisk/ambient_dots_bottom_right.svg',
+            'public/static/index/assets/netdisk/ambient_blue_glow.svg',
+            'public/static/index/assets/netdisk/ambient_violet_glow.svg',
             'public/static/vendor/photoswipe/photoswipe.css',
             'public/static/vendor/photoswipe/photoswipe.esm.min.js',
             'public/static/vendor/photoswipe/photoswipe-lightbox.esm.min.js',

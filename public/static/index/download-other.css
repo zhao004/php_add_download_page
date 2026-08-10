@@ -1,98 +1,160 @@
-/**
- * 网盘下载中转页：精简卡片，适配 PC / 移动端。
- */
+/* 网盘下载页按 Figma 的居中交付卡片组织，背景装饰与内容层彻底分离。 */
 :root {
-    color-scheme: light;
-    --download-other-max: 420px;
-    --download-other-pad: 20px;
-    --download-other-radius: 16px;
+    --download-other-card-shadow: 0 8px 24px rgba(31, 46, 92, 0.08);
+    --download-other-border: color-mix(in srgb, var(--nova-border) 82%, var(--nova-accent));
+    --download-other-muted-border: color-mix(in srgb, var(--nova-border) 90%, transparent);
+    --download-other-accent-wash: rgba(var(--nova-accent-rgb), 0.08);
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
 html,
 body {
+    min-width: 320px;
     min-height: 100%;
 }
 
 body.download-other-body {
-    min-width: 320px;
     margin: 0;
+    overflow-x: hidden;
     color: var(--nova-text-primary);
-    background:
-        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(var(--nova-accent-rgb), 0.1) 0%, transparent 55%),
-        var(--nova-surface-secondary);
+    background: var(--nova-surface-primary);
     font-family: var(--nova-font-body);
     font-synthesis: none;
-    letter-spacing: 0;
-    -webkit-font-smoothing: antialiased;
 }
 
-.download-other-main {
-    display: flex;
+a {
+    color: inherit;
+}
+
+/* 舞台留白与卡片尺寸共同对齐 1440、768、375 三个设计断点。 */
+.download-other-stage {
+    position: relative;
+    display: grid;
     min-height: 100vh;
     min-height: 100dvh;
-    align-items: center;
-    justify-content: center;
-    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-}
-
-.download-other-panel {
-    display: flex;
-    width: min(100%, var(--download-other-max));
-    flex-direction: column;
+    place-items: center;
+    padding: 24px;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--nova-accent-border) 45%, var(--nova-border));
-    border-radius: var(--download-other-radius);
-    background: var(--nova-surface-primary);
-    box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.8) inset,
-        0 18px 48px rgba(15, 23, 42, 0.08);
+    isolation: isolate;
 }
 
-.download-other-brand {
+.download-other-ambient,
+.download-other-card-glow {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.download-other-ambient-image,
+.download-other-card-glow-image {
+    position: absolute;
+    display: block;
+    max-width: none;
+    user-select: none;
+}
+
+.download-other-ambient-image--blue {
+    top: -292px;
+    left: -220px;
+    width: 680px;
+    height: 680px;
+}
+
+.download-other-ambient-image--violet {
+    right: -90px;
+    bottom: -90px;
+    width: 420px;
+    height: 420px;
+}
+
+.download-other-ambient-image--dots {
+    right: 116px;
+    bottom: 104px;
+    width: 96px;
+    height: 96px;
+}
+
+.download-other-card {
+    position: relative;
+    z-index: 1;
     display: flex;
+    flex-direction: column;
+    width: calc(100vw - 48px);
+    max-width: 800px;
+    min-height: 560px;
+    overflow: hidden;
+    border: 1px solid var(--download-other-border);
+    border-radius: var(--nova-radius-lg);
+    background: var(--nova-surface-primary);
+    box-shadow: var(--download-other-card-shadow);
+}
+
+.download-other-card-glow-image--blue {
+    top: 112px;
+    left: 526px;
+    width: 324px;
+    height: 324px;
+    opacity: 0.7;
+}
+
+.download-other-card-glow-image--violet {
+    right: -64px;
+    bottom: -96px;
+    width: 268px;
+    height: 268px;
+    opacity: 0.62;
+}
+
+.download-other-card-header,
+.download-other-card-content,
+.download-other-meta {
+    position: relative;
+    z-index: 1;
+}
+
+.download-other-card-header {
+    display: flex;
+    flex: 0 0 96px;
     align-items: center;
-    padding: 14px var(--download-other-pad);
-    border-bottom: 1px solid var(--nova-border);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--nova-accent-soft) 55%, #ffffff) 0%,
-        rgba(255, 255, 255, 0.4) 100%
-    );
+    padding: 0 48px;
+    border-bottom: 1px solid var(--download-other-muted-border);
 }
 
 .download-other-brand-link {
     display: inline-flex;
-    min-width: 0;
-    max-width: 100%;
     align-items: center;
-    gap: 10px;
-    border-radius: 10px;
-    color: inherit;
+    gap: 12px;
+    min-height: 44px;
+    border-radius: var(--nova-radius-md);
     text-decoration: none;
 }
 
 .download-other-brand-link:focus-visible,
+.download-other-copy-button:focus-visible,
 .download-other-open-link:focus-visible,
-.download-other-home-link:focus-visible,
-.download-other-copy-button:focus-visible {
-    outline: 3px solid rgba(var(--nova-accent-rgb), 0.3);
-    outline-offset: 2px;
+.download-other-home-link:focus-visible {
+    outline: none;
+    box-shadow: var(--nova-focus-ring);
 }
 
 .download-other-brand-mark {
     display: grid;
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: 40px;
+    height: 40px;
     place-items: center;
     overflow: hidden;
-    border-radius: 9px;
-    background: #ffffff;
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    color: var(--nova-on-accent);
+    background: var(--nova-accent);
+    box-shadow: 0 6px 16px rgba(var(--nova-accent-rgb), 0.24);
+    font-size: 17px;
+    font-weight: 750;
 }
 
 .download-other-brand-mark img {
@@ -103,132 +165,180 @@ body.download-other-body {
 }
 
 .download-other-brand-mark.is-fallback {
-    color: var(--nova-on-accent);
-    background: linear-gradient(155deg, var(--nova-accent) 0%, var(--nova-accent-hover) 100%);
-}
-
-.download-other-brand-mark.is-fallback span {
     font-family: var(--nova-font-display);
-    font-size: 14px;
-    line-height: 1;
+    font-weight: 400;
 }
 
 .download-other-brand-name {
+    max-width: 240px;
     overflow: hidden;
     color: var(--nova-text-primary);
-    font-size: 15px;
-    font-weight: 650;
-    letter-spacing: 0.01em;
-    line-height: 1.2;
+    font-size: 22px;
+    font-weight: 720;
+    letter-spacing: -0.04em;
+    line-height: 28px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.download-other-content {
+.download-other-card-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 22px var(--download-other-pad) 8px;
+    align-items: flex-start;
+    width: 448px;
+    margin: 37px auto 0;
+    padding-bottom: 16px;
 }
 
-.download-other-content h1 {
-    margin: 0;
+.download-other-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 176px;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid color-mix(in srgb, var(--nova-accent) 22%, transparent);
+    border-radius: var(--nova-radius-pill);
+    color: var(--nova-selection-ink);
+    background: var(--download-other-accent-wash);
+    font-size: 12px;
+    font-weight: 620;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+.download-other-badge img {
+    display: block;
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+}
+
+.download-other-title {
+    margin: 24px 0 0;
     color: var(--nova-text-primary);
-    font-size: clamp(22px, 5vw, 26px);
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
+    font-size: 48px;
+    font-weight: 760;
+    letter-spacing: -0.055em;
+    line-height: 60px;
+}
+
+.is-unversioned .download-other-title {
+    margin-top: 0;
 }
 
 .download-other-hint {
-    margin: 0;
+    margin: 10px 0 0;
     color: var(--nova-text-secondary);
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 24px;
 }
 
 .download-other-password {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 6px;
+    width: 100%;
+    margin-top: 38px;
 }
 
 .download-other-password-label {
-    color: var(--nova-text-muted);
-    font-size: 12px;
-    font-weight: 600;
+    display: block;
+    color: var(--nova-text-primary);
+    font-size: 16px;
+    font-weight: 680;
+    line-height: 22px;
 }
 
 .download-other-password-value {
     display: flex;
-    min-height: 48px;
     align-items: center;
-    gap: 8px;
-    padding: 6px 6px 6px 14px;
-    border: 1px solid color-mix(in srgb, var(--nova-accent-border) 70%, var(--nova-border));
+    width: 100%;
+    min-height: 72px;
+    margin-top: 10px;
+    padding: 10px 11px 10px 23px;
+    border: 1px solid var(--download-other-muted-border);
     border-radius: 12px;
-    background: color-mix(in srgb, var(--nova-accent-soft) 70%, #ffffff);
+    background: color-mix(in srgb, var(--nova-surface-secondary) 76%, var(--nova-surface-primary));
 }
 
 .download-other-password-value code {
     min-width: 0;
     flex: 1 1 auto;
     overflow-wrap: anywhere;
-    color: var(--nova-selection-ink);
+    color: var(--nova-text-primary);
     font-family: var(--nova-font-mono);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 28px;
+    font-weight: 500;
     letter-spacing: 0.04em;
-    line-height: 1.35;
-    user-select: all;
+    line-height: 36px;
 }
 
 .download-other-copy-button {
     display: inline-flex;
-    min-height: 36px;
-    flex: 0 0 auto;
+    flex: 0 0 116px;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 0 12px;
-    border: 1px solid var(--nova-accent-border);
-    border-radius: 9px;
-    color: var(--nova-selection-ink);
+    gap: 8px;
+    min-width: 116px;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid color-mix(in srgb, var(--nova-accent) 36%, transparent);
+    border-radius: 10px;
+    color: var(--nova-accent);
     background: var(--nova-surface-primary);
     cursor: pointer;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 650;
-    line-height: 1;
-    transition:
-        color 140ms ease,
-        border-color 140ms ease,
-        background-color 140ms ease;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 680;
+    line-height: 20px;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .download-other-copy-button:hover {
-    color: var(--nova-on-accent);
     border-color: var(--nova-accent);
-    background: var(--nova-accent);
+    background: var(--download-other-accent-wash);
+}
+
+.download-other-copy-button:active {
+    transform: translateY(1px);
 }
 
 .download-other-copy-button[data-copy-state="success"] {
-    color: var(--nova-success);
-    border-color: color-mix(in srgb, var(--nova-success) 35%, var(--nova-border));
-    background: var(--nova-success-soft);
+    border-color: color-mix(in srgb, var(--nova-accent) 52%, transparent);
+    background: var(--download-other-accent-wash);
 }
 
 .download-other-copy-button[data-copy-state="failure"] {
+    border-color: color-mix(in srgb, var(--nova-danger) 48%, transparent);
     color: var(--nova-danger);
-    border-color: color-mix(in srgb, var(--nova-danger) 35%, var(--nova-border));
     background: var(--nova-danger-soft);
 }
 
-.download-other-copy-button svg {
-    width: 15px;
-    height: 15px;
-    flex: 0 0 15px;
+/* 功能图标以导出的 SVG 作蒙版，以便继续响应后台主题色。 */
+.download-other-icon {
+    --download-other-icon-mask: none;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    background-color: currentColor;
+    -webkit-mask: var(--download-other-icon-mask) center / contain no-repeat;
+    mask: var(--download-other-icon-mask) center / contain no-repeat;
+}
+
+.download-other-icon--copy {
+    --download-other-icon-mask: url("/static/index/assets/netdisk/icon_copy_default.svg");
+}
+
+.download-other-copy-button[data-copy-state="success"] .download-other-icon--copy,
+.download-other-icon--copy-success {
+    --download-other-icon-mask: url("/static/index/assets/netdisk/icon_copy_success.svg");
+}
+
+.download-other-icon--download {
+    --download-other-icon-mask: url("/static/index/assets/netdisk/icon_download.svg");
+}
+
+.download-other-icon--chevron {
+    --download-other-icon-mask: url("/static/index/assets/netdisk/icon_chevron_left.svg");
 }
 
 .download-other-copy-status {
@@ -243,152 +353,353 @@ body.download-other-body {
 
 .download-other-actions {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px var(--download-other-pad) 20px;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.is-passwordless .download-other-actions {
+    margin-top: 24px;
 }
 
 .download-other-open-link,
 .download-other-home-link {
     display: inline-flex;
-    width: 100%;
-    min-height: 48px;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 650;
-    line-height: 1;
+    gap: 8px;
+    min-height: 52px;
+    border-radius: var(--nova-radius-pill);
     text-decoration: none;
-    transition:
-        background-color 140ms ease,
-        border-color 140ms ease,
-        color 140ms ease,
-        transform 140ms ease;
+    font-size: 16px;
+    font-weight: 680;
+    line-height: 24px;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .download-other-open-link {
+    width: 252px;
     color: var(--nova-on-accent);
-    background: linear-gradient(
-        165deg,
-        color-mix(in srgb, var(--nova-accent) 88%, #ffffff) 0%,
-        var(--nova-accent) 48%,
-        var(--nova-accent-hover) 100%
-    );
-    box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.2) inset,
-        0 10px 24px rgba(var(--nova-accent-rgb), 0.22);
+    background: var(--nova-accent);
+    box-shadow: 0 8px 18px rgba(var(--nova-accent-rgb), 0.22);
 }
 
 .download-other-open-link:hover {
     background: var(--nova-accent-hover);
-    transform: translateY(-1px);
-}
-
-.download-other-open-link:active {
-    transform: none;
 }
 
 .download-other-home-link {
-    min-height: 42px;
-    border: 1px solid var(--nova-border);
-    color: var(--nova-text-secondary);
-    background: transparent;
-    font-size: 14px;
-    font-weight: 550;
+    width: 180px;
+    border: 1px solid var(--download-other-muted-border);
+    color: var(--nova-text-primary);
+    background: color-mix(in srgb, var(--nova-surface-primary) 88%, var(--nova-surface-secondary));
 }
 
 .download-other-home-link:hover {
-    color: var(--nova-selection-ink);
-    border-color: var(--nova-accent-border);
-    background: var(--nova-accent-soft);
+    border-color: color-mix(in srgb, var(--nova-accent) 35%, var(--nova-border));
+    color: var(--nova-accent);
+    background: var(--download-other-accent-wash);
+}
+
+.download-other-open-link:active,
+.download-other-home-link:active {
+    transform: translateY(1px);
 }
 
 .download-other-meta {
-    padding: 10px var(--download-other-pad) 14px;
-    border-top: 1px solid var(--nova-border);
+    display: flex;
+    flex: 0 0 64px;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    padding: 0 24px;
+    border-top: 1px solid var(--download-other-muted-border);
     color: var(--nova-text-muted);
-    background: color-mix(in srgb, var(--nova-surface-secondary) 80%, #ffffff);
-    font-family: var(--nova-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.02em;
+    font-size: 12px;
+    line-height: 18px;
     text-align: center;
 }
 
-/* PC：更宽一点的阅读区，按钮横向排列 */
-@media (min-width: 720px) {
-    :root {
-        --download-other-max: 440px;
-        --download-other-pad: 24px;
-    }
+/* Toast 脱离卡片文档流，避免反馈出现时推动主要操作。 */
+.download-other-toast {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 272px;
+    min-height: 56px;
+    padding: 0 18px;
+    border: 1px solid color-mix(in srgb, var(--nova-accent) 24%, transparent);
+    border-radius: 12px;
+    color: var(--nova-text-primary);
+    background: color-mix(in srgb, var(--nova-surface-primary) 92%, var(--nova-accent-soft));
+    box-shadow: 0 10px 26px rgba(31, 46, 92, 0.14);
+    pointer-events: none;
+    transform: translate(-50%, -8px);
+    opacity: 0;
+    transition: opacity 180ms ease, transform 180ms ease;
+}
 
-    .download-other-main {
-        padding: 32px;
-    }
+.download-other-toast[hidden] {
+    display: none;
+}
 
-    .download-other-content {
-        padding-top: 26px;
-    }
+.download-other-toast.is-visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
 
-    .download-other-actions {
-        flex-direction: row;
-        align-items: center;
-        gap: 12px;
-        padding-bottom: 24px;
-    }
+.download-other-toast .download-other-icon {
+    color: var(--nova-accent);
+}
 
-    .download-other-open-link {
-        flex: 1 1 auto;
-        width: auto;
-        min-height: 46px;
-    }
+.download-other-toast span:last-child {
+    font-size: 14px;
+    font-weight: 620;
+    line-height: 20px;
+}
 
-    .download-other-home-link {
-        flex: 0 0 auto;
-        width: auto;
-        min-width: 108px;
-        min-height: 46px;
-        padding: 0 16px;
+@media (min-width: 1081px) {
+    .download-other-card {
+        width: 800px;
     }
 }
 
-/* 窄屏：卡片贴底更易单手操作 */
-@media (max-width: 480px) {
-    .download-other-main {
-        align-items: stretch;
-        padding: 12px;
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
+/* 平板维持横向操作，重新定位卡片内容以匹配 768 宽画板。 */
+@media (min-width: 768px) and (max-width: 1080px) {
+    .download-other-ambient-image--blue {
+        top: -204px;
+        left: -210px;
+        width: 520px;
+        height: 520px;
     }
 
-    .download-other-panel {
-        width: 100%;
-        margin: auto 0;
-        border-radius: 14px;
+    .download-other-ambient-image--violet {
+        right: -122px;
+        bottom: -96px;
+        width: 350px;
+        height: 350px;
+    }
+
+    .download-other-ambient-image--dots {
+        right: 62px;
+        bottom: 88px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .download-other-card {
+        width: 640px;
+        min-height: 600px;
+    }
+
+    .download-other-card-header {
+        flex-basis: 88px;
+    }
+
+    .download-other-card-content {
+        width: 480px;
+        margin: 33px auto 0;
     }
 
     .download-other-password-value {
-        min-height: 52px;
-    }
-
-    .download-other-copy-button {
-        min-height: 40px;
-        padding: 0 14px;
+        min-height: 72px;
     }
 
     .download-other-open-link {
-        min-height: 50px;
-        font-size: 16px;
+        width: 272px;
+    }
+
+    .download-other-home-link {
+        width: 192px;
+    }
+
+    .download-other-card-glow-image--blue {
+        top: 96px;
+        left: 366px;
+        width: 300px;
+        height: 300px;
+    }
+
+    .download-other-card-glow-image--violet {
+        right: -78px;
+        bottom: -92px;
+        width: 256px;
+        height: 256px;
+    }
+
+    .download-other-toast {
+        top: 132px;
+    }
+}
+
+/* 手机端改为纵向操作，并保留 375 宽画板中的 343 宽卡片。 */
+@media (max-width: 767px) {
+    .download-other-stage {
+        padding: 16px;
+    }
+
+    .download-other-ambient-image--blue {
+        top: -126px;
+        left: -145px;
+        width: 320px;
+        height: 320px;
+    }
+
+    .download-other-ambient-image--violet {
+        right: -82px;
+        bottom: -48px;
+        width: 210px;
+        height: 210px;
+    }
+
+    .download-other-ambient-image--dots {
+        right: 41px;
+        bottom: 84px;
+        width: 32px;
+        height: 32px;
+    }
+
+    .download-other-card {
+        width: 343px;
+        max-width: 100%;
+        min-height: 576px;
+    }
+
+    .download-other-card-header {
+        flex-basis: 72px;
+        padding: 0 24px;
+    }
+
+    .download-other-brand-link {
+        gap: 10px;
+        min-height: 40px;
+    }
+
+    .download-other-brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 15px;
+    }
+
+    .download-other-brand-name {
+        max-width: 196px;
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .download-other-card-content {
+        width: 295px;
+        max-width: calc(100% - 46px);
+        margin: 27px auto 0;
+        padding-bottom: 16px;
+    }
+
+    .download-other-card-glow-image--blue {
+        top: 70px;
+        left: 150px;
+        width: 196px;
+        height: 196px;
+    }
+
+    .download-other-card-glow-image--violet {
+        right: -62px;
+        bottom: -70px;
+        width: 180px;
+        height: 180px;
+    }
+
+    .download-other-title {
+        margin-top: 20px;
+        font-size: 32px;
+        letter-spacing: -0.045em;
+        line-height: 44px;
+    }
+
+    .is-unversioned .download-other-title {
+        margin-top: 0;
+    }
+
+    .download-other-hint {
+        margin-top: 8px;
+        line-height: 22px;
+    }
+
+    .download-other-password {
+        margin-top: 28px;
+    }
+
+    .download-other-password-label {
+        font-size: 15px;
+        line-height: 20px;
+    }
+
+    .download-other-password-value {
+        min-height: 64px;
+        margin-top: 10px;
+        padding: 10px 9px 10px 17px;
+        border-radius: 10px;
+    }
+
+    .download-other-password-value code {
+        font-size: 24px;
+        line-height: 32px;
+    }
+
+    .download-other-copy-button {
+        min-width: 102px;
+        min-height: 44px;
+        flex-basis: 102px;
+        padding: 0 10px;
+        border-radius: 9px;
+    }
+
+    .download-other-actions,
+    .is-passwordless .download-other-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        margin-top: 16px;
+    }
+
+    .download-other-open-link,
+    .download-other-home-link {
+        width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+        line-height: 22px;
+    }
+
+    .download-other-icon--download,
+    .download-other-icon--chevron {
+        width: 18px;
+        height: 18px;
+        flex-basis: 18px;
+    }
+
+    .download-other-meta {
+        flex-basis: 68px;
+        padding: 0 16px;
+    }
+
+    .download-other-toast {
+        top: 38px;
+        width: min(257px, calc(100vw - 32px));
+        min-height: 56px;
+        padding: 0 16px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .download-other-copy-button,
     .download-other-open-link,
-    .download-other-home-link {
+    .download-other-home-link,
+    .download-other-toast {
         transition: none;
-    }
-
-    .download-other-open-link:hover {
-        transform: none;
     }
 }

@@ -1,0 +1,34 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="95" height="95" viewBox="0 0 95 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Ambient_Dots_BottomRight" opacity="0.38" clip-path="url(#clip0_0_70)">
+<circle id="Ambient_Dot" cx="3.5" cy="3.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_2" cx="25.5" cy="3.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_3" cx="47.5" cy="3.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_4" cx="69.5" cy="3.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_5" cx="91.5" cy="3.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_6" cx="3.5" cy="25.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_7" cx="25.5" cy="25.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_8" cx="47.5" cy="25.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_9" cx="69.5" cy="25.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_10" cx="91.5" cy="25.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_11" cx="3.5" cy="47.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_12" cx="25.5" cy="47.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_13" cx="47.5" cy="47.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_14" cx="69.5" cy="47.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_15" cx="91.5" cy="47.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_16" cx="3.5" cy="69.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_17" cx="25.5" cy="69.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_18" cx="47.5" cy="69.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_19" cx="69.5" cy="69.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_20" cx="91.5" cy="69.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_21" cx="3.5" cy="91.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_22" cx="25.5" cy="91.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_23" cx="47.5" cy="91.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_24" cx="69.5" cy="91.5" r="3.5" fill="#356AF6"/>
+<circle id="Ambient_Dot_25" cx="91.5" cy="91.5" r="3.5" fill="#356AF6"/>
+</g>
+<defs>
+<clipPath id="clip0_0_70">
+<rect width="95" height="95" fill="white"/>
+</clipPath>
+</defs>
+</svg>

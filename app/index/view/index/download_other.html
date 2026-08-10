@@ -13,9 +13,23 @@
     <script src="/static/index/download-other.js" defer></script>
 </head>
 <body class="download-other-body">
-<main class="download-other-main">
-    <section class="download-other-panel" aria-labelledby="download-other-title" data-download-other>
-        <header class="download-other-brand">
+<main class="download-other-stage" data-download-other>
+    <!-- 页面背景装饰使用 Figma 导出的同源资源，避免依赖外部请求。 -->
+    <div class="download-other-ambient" aria-hidden="true">
+        <img class="download-other-ambient-image download-other-ambient-image--blue" src="/static/index/assets/netdisk/ambient_blue_top_left.svg" alt="">
+        <img class="download-other-ambient-image download-other-ambient-image--violet" src="/static/index/assets/netdisk/ambient_violet_bottom_right.svg" alt="">
+        <img class="download-other-ambient-image download-other-ambient-image--dots" src="/static/index/assets/netdisk/ambient_dots_bottom_right.svg" alt="">
+    </div>
+
+    <section class="download-other-card{if !$hasSharePassword} is-passwordless{/if}{if !$versionMeta} is-unversioned{/if}"
+             aria-labelledby="download-other-title">
+        <!-- 卡片内的柔光只负责层次，不参与交互。 -->
+        <div class="download-other-card-glow" aria-hidden="true">
+            <img class="download-other-card-glow-image download-other-card-glow-image--blue" src="/static/index/assets/netdisk/ambient_blue_glow.svg" alt="">
+            <img class="download-other-card-glow-image download-other-card-glow-image--violet" src="/static/index/assets/netdisk/ambient_violet_glow.svg" alt="">
+        </div>
+
+        <header class="download-other-card-header">
             <a class="download-other-brand-link" href="/" aria-label="返回首页">
                 <span class="download-other-brand-mark {if !$appIcon}is-fallback{/if}" aria-hidden="true">
                     {if $appIcon}
@@ -28,8 +42,16 @@
             </a>
         </header>
 
-        <div class="download-other-content">
-            <h1 id="download-other-title">网盘下载</h1>
+        <div class="download-other-card-content">
+            {if $versionMeta}
+            <div class="download-other-badge">
+                <img src="/static/index/assets/netdisk/icon_status_dot.svg" alt="" aria-hidden="true">
+                <span>{$versionMeta}</span>
+            </div>
+            {/if}
+
+            <h1 id="download-other-title" class="download-other-title">网盘下载</h1>
+
             {if $hasSharePassword}
             <p class="download-other-hint">复制访问密码，打开网盘后粘贴使用。</p>
             <div class="download-other-password" aria-labelledby="download-other-password-label">
@@ -37,33 +59,42 @@
                 <div class="download-other-password-value">
                     <code id="download-other-password-value">{$sharePassword}</code>
                     <button class="download-other-copy-button" type="button" data-copy-share-password
-                            aria-label="复制访问密码" title="复制访问密码">
-                        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" focusable="false">
-                            <rect x="7" y="7" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
-                            <path d="M13 7V5.6A1.6 1.6 0 0 0 11.4 4H5.6A1.6 1.6 0 0 0 4 5.6v5.8A1.6 1.6 0 0 0 5.6 13H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        </svg>
-                        <span class="download-other-copy-text">复制</span>
+                            data-copy-state="default" aria-label="复制访问密码" title="复制访问密码">
+                        <span class="download-other-icon download-other-icon--copy" data-copy-icon aria-hidden="true"></span>
+                        <span class="download-other-copy-text" data-copy-label>复制</span>
                     </button>
                 </div>
                 <span class="download-other-copy-status" data-copy-share-password-status aria-live="polite"></span>
             </div>
             {else}
-            <p class="download-other-hint">此分享无需访问密码，可直接打开网盘。</p>
+            <p class="download-other-hint download-other-hint--direct" data-no-password>此分享无需访问密码，可直接打开网盘。</p>
             {/if}
-        </div>
 
-        <div class="download-other-actions">
-            <a class="download-other-open-link" href="{$shareUrl}" target="_blank" rel="noopener noreferrer"
-               referrerpolicy="no-referrer">
-                打开网盘
-            </a>
-            <a class="download-other-home-link" href="/">返回首页</a>
+            <div class="download-other-actions">
+                <a class="download-other-open-link" href="{$shareUrl}" target="_blank" rel="noopener noreferrer"
+                   referrerpolicy="no-referrer">
+                    <span class="download-other-icon download-other-icon--download" aria-hidden="true"></span>
+                    <span>打开网盘</span>
+                </a>
+                <a class="download-other-home-link" href="/">
+                    <span class="download-other-icon download-other-icon--chevron" aria-hidden="true"></span>
+                    <span>返回首页</span>
+                </a>
+            </div>
         </div>
 
         {if $versionMeta}
         <footer class="download-other-meta">{$versionMeta}</footer>
         {/if}
     </section>
+
+    {if $hasSharePassword}
+    <!-- Toast 独立于卡片定位，复制成功后由脚本控制生命周期。 -->
+    <div class="download-other-toast" data-copy-success-toast role="status" aria-live="polite" aria-hidden="true" hidden>
+        <span class="download-other-icon download-other-icon--copy-success" aria-hidden="true"></span>
+        <span>访问密码已复制，可直接打开网盘</span>
+    </div>
+    {/if}
 </main>
 </body>
 </html>

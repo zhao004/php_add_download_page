@@ -1,11 +1,12 @@
 /**
- * 前台应用商店风格预览画廊、PhotoSwipe 放大预览、顶栏粘性下载与区块入场显现。
+ * 前台应用商店风格预览画廊、PhotoSwipe 放大预览、移动导航与区块入场显现。
  *
  * 副作用：横向滚动吸附切换截图；多图时首尾克隆实现 1→2→3→1… 无缝轮询；
  * 自动播放、圆点、箭头、方向键；点击截图通过 PhotoSwipe 放大，灯箱切图同步画廊。
  * 用户交互、悬停、焦点、灯箱打开或页面不可见时暂停自动播放；
  * 系统开启「减少动态效果」时不自动播放。
- * 主下载按钮滚出视口后显示顶栏下载，避免首屏双按钮冗余。
+ * 移动端导航由头部按钮控制，支持点击外部、Escape 和链接跳转后关闭。
+ * 桌面端仅在主下载入口被固定顶栏遮住后显示右上角下载入口。
  * 视口外特性卡片等通过 IntersectionObserver 添加 is-visible 类触发入场。
  */
 (() => {
@@ -22,6 +23,12 @@
 
     /** 点击与拖拽区分阈值（像素）。 */
     const CLICK_MOVE_THRESHOLD_PX = 8;
+
+    /** 桌面端导航与下载入口使用的最小视口宽度。 */
+    const DESKTOP_MIN_WIDTH_PX = 1081;
+
+    /** 与 CSS 桌面断点保持一致的媒体查询。 */
+    const DESKTOP_MEDIA_QUERY = `(min-width: ${DESKTOP_MIN_WIDTH_PX}px)`;
 
     /** 无法读取真实尺寸时的回退宽高（竖屏应用截图常见比例）。 */
     const FALLBACK_IMAGE_WIDTH = 1170;
@@ -1114,66 +1121,151 @@
     });
 
     /**
-     * 主下载仍在视口内时隐藏顶栏下载；滚过后显示，兼顾首屏简洁与长页可达。
+     * 初始化移动端导航弹层，避免桌面导航在窄屏不可达。
+     *
+     * 副作用：维护 aria-expanded 与 hidden 状态；点击外部、Escape、导航跳转和离开移动断点时关闭弹层。
      *
      * @returns {void}
      */
-    const initStickyDownload = () => {
-        const primaryDownload = document.querySelector('[data-primary-download]');
-        const stickyDownload = document.querySelector('[data-sticky-download]');
-        if (!(primaryDownload instanceof HTMLElement) || !(stickyDownload instanceof HTMLElement)) {
+    const initMobileNavigation = () => {
+        const header = document.querySelector('[data-site-header]');
+        const toggle = document.querySelector('[data-mobile-menu-toggle]');
+        const menu = document.querySelector('[data-mobile-menu]');
+        if (!(header instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement) || !(menu instanceof HTMLElement)) {
             return;
         }
+
+        const mobileQuery = typeof window.matchMedia === 'function'
+            ? window.matchMedia('(max-width: 767px)')
+            : null;
 
         /**
-         * @param {boolean} visible 顶栏下载是否可见
+         * @returns {boolean} 当前是否可展示移动导航
+         */
+        const isMobileViewport = () => mobileQuery === null || mobileQuery.matches;
+
+        /**
+         * @param {boolean} open 是否打开移动导航
+         * @param {boolean} [restoreFocus] 关闭后是否将焦点交还给触发按钮
          * @returns {void}
          */
-        const setStickyVisible = (visible) => {
-            if (visible) {
-                stickyDownload.hidden = false;
-                // 下一帧再加 class，确保从 hidden 切到显示时过渡生效。
-                window.requestAnimationFrame(() => {
-                    stickyDownload.classList.add('is-visible');
-                });
-                return;
-            }
+        const setMenuOpen = (open, restoreFocus = false) => {
+            const visible = open && isMobileViewport();
+            menu.hidden = !visible;
+            toggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
+            toggle.setAttribute('aria-label', visible ? '关闭导航' : '打开导航');
+            toggle.title = visible ? '关闭导航' : '打开导航';
 
-            stickyDownload.classList.remove('is-visible');
-            if (prefersReducedMotion) {
-                stickyDownload.hidden = true;
-                return;
+            if (!visible && restoreFocus) {
+                toggle.focus();
             }
-
-            window.setTimeout(() => {
-                if (!stickyDownload.classList.contains('is-visible')) {
-                    stickyDownload.hidden = true;
-                }
-            }, 240);
         };
 
-        if (typeof IntersectionObserver !== 'function') {
-            // 无 IntersectionObserver 时不显示顶栏下载，避免与主按钮长期并存。
-            setStickyVisible(false);
+        toggle.addEventListener('click', () => {
+            setMenuOpen(menu.hidden);
+        });
+
+        document.addEventListener('pointerdown', (event) => {
+            if (!menu.hidden && event.target instanceof Node && !header.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !menu.hidden) {
+                setMenuOpen(false, true);
+            }
+        });
+
+        menu.querySelectorAll('[data-mobile-menu-link]').forEach((link) => {
+            link.addEventListener('click', () => {
+                setMenuOpen(false);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            if (!isMobileViewport()) {
+                setMenuOpen(false);
+            }
+        });
+    };
+
+    /**
+     * 根据主下载入口是否被固定顶栏完全遮住，控制桌面端备用下载入口。
+     *
+     * 副作用：切换顶部入口的可见性与键盘可达性；滚动和断点变化时延迟到下一帧统一计算。
+     *
+     * @returns {void}
+     */
+    const initDesktopStickyDownload = () => {
+        const header = document.querySelector('[data-site-header]');
+        const primaryDownload = document.querySelector('[data-primary-download]');
+        const stickyDownload = document.querySelector('[data-sticky-download]');
+        if (!(header instanceof HTMLElement) || !(stickyDownload instanceof HTMLAnchorElement)) {
             return;
         }
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    // 主按钮仍可见（含部分可见）→ 隐藏顶栏；完全离开后显示。
-                    setStickyVisible(!entry.isIntersecting);
-                });
-            },
-            {
-                root: null,
-                // 顶栏高度附近即可切换，避免主按钮刚被挡住仍不出现顶栏 CTA。
-                rootMargin: '-64px 0px 0px 0px',
-                threshold: 0,
-            }
-        );
+        const desktopQuery = typeof window.matchMedia === 'function'
+            ? window.matchMedia(DESKTOP_MEDIA_QUERY)
+            : null;
+        /** @type {number|null} */
+        let scheduledFrameId = null;
 
-        observer.observe(primaryDownload);
+        /**
+         * @returns {boolean} 当前是否处于桌面断点
+         */
+        const isDesktopViewport = () => desktopQuery === null
+            ? window.innerWidth >= DESKTOP_MIN_WIDTH_PX
+            : desktopQuery.matches;
+
+        /**
+         * @param {boolean} visible 顶部入口是否可见且可聚焦
+         * @returns {void}
+         */
+        const setStickyDownloadVisible = (visible) => {
+            stickyDownload.classList.toggle('is-visible', visible);
+            stickyDownload.setAttribute('aria-hidden', visible ? 'false' : 'true');
+
+            if (visible) {
+                stickyDownload.removeAttribute('tabindex');
+                return;
+            }
+
+            stickyDownload.setAttribute('tabindex', '-1');
+        };
+
+        const syncStickyDownload = () => {
+            scheduledFrameId = null;
+
+            if (!isDesktopViewport() || !(primaryDownload instanceof HTMLElement)) {
+                setStickyDownloadVisible(true);
+                return;
+            }
+
+            const headerBottom = header.getBoundingClientRect().bottom;
+            const primaryRect = primaryDownload.getBoundingClientRect();
+            setStickyDownloadVisible(primaryRect.bottom <= headerBottom);
+        };
+
+        const scheduleStickyDownloadSync = () => {
+            if (scheduledFrameId !== null) {
+                return;
+            }
+            scheduledFrameId = window.requestAnimationFrame(syncStickyDownload);
+        };
+
+        window.addEventListener('scroll', scheduleStickyDownloadSync, {passive: true});
+        window.addEventListener('resize', scheduleStickyDownloadSync);
+
+        if (desktopQuery !== null) {
+            if (typeof desktopQuery.addEventListener === 'function') {
+                desktopQuery.addEventListener('change', scheduleStickyDownloadSync);
+            } else {
+                desktopQuery.addListener(scheduleStickyDownloadSync);
+            }
+        }
+
+        scheduleStickyDownloadSync();
     };
 
     /**
@@ -1243,6 +1335,7 @@
         });
     };
 
-    initStickyDownload();
+    initMobileNavigation();
+    initDesktopStickyDownload();
     initScrollReveals();
 })();
